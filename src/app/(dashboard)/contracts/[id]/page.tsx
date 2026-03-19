@@ -17,12 +17,12 @@ export async function generateMetadata({
   const supabase = await createClient()
   const { data } = await supabase
     .from('contracts')
-    .select('title, ref_code')
+    .select('title')
     .eq('id', params.id)
     .single()
 
   return {
-    title: data ? `${data.ref_code} - ${data.title}` : 'Contract',
+    title: data?.title ?? 'Contract',
   }
 }
 

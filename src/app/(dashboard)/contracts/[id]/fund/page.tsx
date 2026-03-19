@@ -45,7 +45,7 @@ const METHODS: Array<{
     label: 'Crypto (USDC)',
     sub: 'Pay with USDC or USDT stablecoins',
     icon: Bitcoin,
-    badge: 'Global · Instant',
+    badge: 'Global \u00b7 Instant',
     regions: 'Worldwide',
   },
 ]

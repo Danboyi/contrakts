@@ -61,6 +61,8 @@ const RulingSchema = z
     }
   })
 
+type RulingInput = z.infer<typeof RulingSchema>
+
 async function activateNextPendingMilestone(contractId: string) {
   const supabaseAdmin = createAdminClient()
   const { data: nextMilestones } = await supabaseAdmin
@@ -581,23 +583,12 @@ export async function appealDispute(disputeId: string): Promise<DisputeActionRes
   return { success: true, disputeId }
 }
 
-export async function issueRuling(
-  input: z.infer<typeof RulingSchema>
+export async function issueRulingInternal(
+  input: RulingInput,
+  actorId: string,
+  arbitratorId: string | null = actorId
 ): Promise<DisputeActionResult> {
-  const supabase = await createClient()
   const supabaseAdmin = createAdminClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: 'Not authenticated.' }
-  }
-
-  const adminRole = await getAdminRole(user.id)
-  if (!adminRole || !hasAdminRole(adminRole, 'arbitrator')) {
-    return { error: 'Only arbitrators can issue rulings.' }
-  }
 
   const parsed = RulingSchema.safeParse(input)
   if (!parsed.success) {
@@ -761,7 +752,7 @@ export async function issueRuling(
       ruling,
       ruling_notes: rulingNotes.trim(),
       ruling_pct_vendor: rulingPctVendor ?? null,
-      arbitrator_id: user.id,
+      arbitrator_id: arbitratorId,
       resolved_at: now,
     })
     .eq('id', disputeId)
@@ -773,7 +764,7 @@ export async function issueRuling(
 
   await supabaseAdmin.from('audit_log').insert({
     contract_id: contract.id,
-    actor_id: user.id,
+    actor_id: actorId,
     event_type: 'dispute.resolved',
     payload: {
       dispute_id: disputeId,
@@ -820,4 +811,24 @@ export async function issueRuling(
   revalidatePath('/admin/disputes')
 
   return { success: true, disputeId }
+}
+
+export async function issueRuling(
+  input: RulingInput
+): Promise<DisputeActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Not authenticated.' }
+  }
+
+  const adminRole = await getAdminRole(user.id)
+  if (!adminRole || !hasAdminRole(adminRole, 'arbitrator')) {
+    return { error: 'Only arbitrators can issue rulings.' }
+  }
+
+  return issueRulingInternal(input, user.id, user.id)
 }

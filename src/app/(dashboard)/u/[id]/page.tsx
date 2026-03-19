@@ -31,7 +31,7 @@ export async function generateMetadata({
     .eq('id', params.id)
     .maybeSingle()
 
-  return { title: data ? `${data.full_name} - Contrakts` : 'Profile' }
+  return { title: data?.full_name ?? 'Profile' }
 }
 
 function getKycBadge(status: string) {

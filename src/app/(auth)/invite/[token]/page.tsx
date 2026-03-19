@@ -35,7 +35,7 @@ type InvitePageContract = Pick<
 }
 
 export const metadata = {
-  title: 'Contract invite - Contrakts',
+  title: 'Contract invite',
 }
 
 export default async function InvitePage({

@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { cn } from '@/lib/utils/cn'
 import { formatDateTime } from '@/lib/utils/format-date'
 
-export const metadata = { title: 'Audit log - Admin' }
+export const metadata = { title: 'Audit log \u00b7 Admin' }
 
 const EVENT_TYPES = [
   'all',

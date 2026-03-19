@@ -279,6 +279,63 @@ export interface Database {
         }
         Relationships: []
       }
+      dispute_ai_analyses: {
+        Row: {
+          appeal_risk: string
+          applied: boolean
+          applied_at: string | null
+          applied_by: string | null
+          auto_resolvable: boolean
+          confidence: number
+          contract_compliance: Json | null
+          created_at: string
+          dispute_id: string
+          evidence_summary: Json | null
+          id: string
+          key_factors: string[]
+          overridden: boolean
+          recommended_ruling: string
+          reasoning: string
+          vendor_pct: number | null
+        }
+        Insert: {
+          appeal_risk?: string
+          applied?: boolean
+          applied_at?: string | null
+          applied_by?: string | null
+          auto_resolvable?: boolean
+          confidence: number
+          contract_compliance?: Json | null
+          created_at?: string
+          dispute_id: string
+          evidence_summary?: Json | null
+          id?: string
+          key_factors?: string[]
+          overridden?: boolean
+          recommended_ruling: string
+          reasoning: string
+          vendor_pct?: number | null
+        }
+        Update: {
+          appeal_risk?: string
+          applied?: boolean
+          applied_at?: string | null
+          applied_by?: string | null
+          auto_resolvable?: boolean
+          confidence?: number
+          contract_compliance?: Json | null
+          created_at?: string
+          dispute_id?: string
+          evidence_summary?: Json | null
+          id?: string
+          key_factors?: string[]
+          overridden?: boolean
+          recommended_ruling?: string
+          reasoning?: string
+          vendor_pct?: number | null
+        }
+        Relationships: []
+      }
       disputes: {
         Row: {
           arbitrator_id: string | null

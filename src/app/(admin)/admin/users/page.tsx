@@ -2,7 +2,7 @@ import { requireAdmin } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AdminUsersClient } from './admin-users-client'
 
-export const metadata = { title: 'Users - Admin' }
+export const metadata = { title: 'Users \u00b7 Admin' }
 
 export default async function AdminUsersPage({
   searchParams,

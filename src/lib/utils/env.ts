@@ -10,6 +10,7 @@ const OPTIONAL_SERVER_VARS = [
   'FLW_SECRET_KEY',
   'COINBASE_COMMERCE_API_KEY',
   'RESEND_API_KEY',
+  'ANTHROPIC_API_KEY',
 ] as const
 
 let hasValidatedEnv = false
