@@ -8,7 +8,7 @@ import { MetricCard } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format-currency'
 import type { Payment } from '@/types'
 
-export const metadata = { title: 'Payment ledger' }
+export const metadata = { title: 'Payments' }
 
 export default async function PaymentLedgerPage({
   params,
@@ -75,7 +75,7 @@ export default async function PaymentLedgerPage({
     <div>
       <PageHeader
         title="Payment ledger"
-        subtitle={`${contract.ref_code} · ${contract.title}`}
+        subtitle={`${contract.ref_code} \u00b7 ${contract.title}`}
         back={{ label: 'Back to contract', href: `/contracts/${params.id}` }}
       />
 

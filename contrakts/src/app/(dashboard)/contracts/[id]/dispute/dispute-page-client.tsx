@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { DeliverableCard } from '@/components/contracts/deliverable-card'
 import { FileUpload, type UploadedFile } from '@/components/contracts/file-upload'
+import { AiAnalysisCard } from '@/components/disputes/ai-analysis-card'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import type { AiDisputeAnalysis } from '@/lib/ai/types'
 import {
   appealDispute,
   raiseDispute,
@@ -734,12 +736,14 @@ export function DisputePageClient({
   contract,
   currentUserId,
   initialDispute,
+  aiAnalysis,
   initialMilestoneId,
   feePaid,
 }: {
   contract: DisputeContract
   currentUserId: string
   initialDispute: DisputeWithEvidence | null
+  aiAnalysis?: AiDisputeAnalysis | null
   initialMilestoneId?: string
   feePaid: boolean
 }) {
@@ -818,6 +822,14 @@ export function DisputePageClient({
     Boolean(activeDispute?.response_due_at) &&
     ['open', 'awaiting_response'].includes(activeDispute?.status ?? '') &&
     respondentEvidence.length === 0
+
+  const canRequestAiAnalysis =
+    Boolean(activeDispute) &&
+    (['under_review', 'clarification'].includes(activeDispute?.status ?? '') ||
+      (clientEvidence.length > 0 && vendorEvidence.length > 0) ||
+      (activeDispute?.status === 'awaiting_response' &&
+        Boolean(activeDispute.response_due_at) &&
+        new Date(activeDispute.response_due_at ?? '').getTime() < Date.now()))
 
   const timelineItems = useMemo<TimelineItem[]>(() => {
     if (!activeDispute) {
@@ -994,6 +1006,21 @@ export function DisputePageClient({
               />
             </div>
           )}
+
+          {activeDispute &&
+            ['open', 'awaiting_response', 'under_review', 'clarification'].includes(
+              activeDispute.status
+            ) && (
+              <AiAnalysisCard
+                disputeId={activeDispute.id}
+                milestoneAmount={
+                  activeDispute.milestone?.amount ?? targetMilestone?.amount ?? 0
+                }
+                currency={contract.currency}
+                initialAnalysis={aiAnalysis ?? null}
+                canRequest={canRequestAiAnalysis}
+              />
+            )}
 
           {['under_review', 'clarification', 'appealed'].includes(activeDispute.status) && (
             <div className="flex items-start gap-3 rounded-[var(--radius-lg)] border border-[hsl(var(--color-warning)/0.2)] bg-[hsl(var(--color-warning)/0.06)] p-4">

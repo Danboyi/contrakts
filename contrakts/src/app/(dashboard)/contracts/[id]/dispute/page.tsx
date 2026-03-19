@@ -1,4 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
+import type { AiDisputeAnalysis } from '@/lib/ai/types'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { DisputePageClient } from './dispute-page-client'
 import type { Contract, Milestone } from '@/types'
@@ -20,6 +22,7 @@ export default async function DisputePage({
   searchParams: { milestone?: string; fee_paid?: string }
 }) {
   const supabase = await createClient()
+  const supabaseAdmin = createAdminClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -78,11 +81,25 @@ export default async function DisputePage({
     (a, b) => a.order_index - b.order_index
   )
 
+  let aiAnalysis: AiDisputeAnalysis | null = null
+  if (disputeData?.id) {
+    const { data: analysisData } = await supabaseAdmin
+      .from('dispute_ai_analyses')
+      .select('*')
+      .eq('dispute_id', disputeData.id)
+      .maybeSingle()
+
+    if (analysisData) {
+      aiAnalysis = analysisData as unknown as AiDisputeAnalysis
+    }
+  }
+
   return (
     <DisputePageClient
       contract={{ ...contract, milestones }}
       currentUserId={user.id}
       initialDispute={(disputeData ?? null) as unknown as DisputeWithEvidence | null}
+      aiAnalysis={aiAnalysis}
       initialMilestoneId={searchParams.milestone}
       feePaid={searchParams.fee_paid === '1'}
     />

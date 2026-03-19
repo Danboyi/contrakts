@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 const PUBLIC_PATHS = ['/login', '/signup', '/invite', '/auth', '/u']
 const ADMIN_PATHS = ['/admin']
-const PUBLIC_API_PATHS = ['/api/v1']
+const PUBLIC_API_PATHS = ['/api/v1', '/api/ai']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -97,5 +97,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/webhooks|api/v1).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|icon.svg|api/webhooks|api/v1|api/ai).*)',
+  ],
 }

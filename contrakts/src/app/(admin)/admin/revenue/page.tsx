@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils/cn'
 import { formatCurrency } from '@/lib/utils/format-currency'
 import { formatDateTime } from '@/lib/utils/format-date'
 
-export const metadata = { title: 'Revenue - Admin' }
+export const metadata = { title: 'Revenue \u00b7 Admin' }
 
 export default async function AdminRevenuePage() {
   await requireAdmin('admin')

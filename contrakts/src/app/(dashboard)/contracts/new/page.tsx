@@ -1,10 +1,21 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, CheckCircle, Copy, Eye, Send } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Copy,
+  Eye,
+  PenLine,
+  Send,
+  Sparkles,
+} from 'lucide-react'
+import { nanoid } from 'nanoid'
 import { Suspense, useEffect, useRef, useState, useTransition } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { ContractDrafter } from '@/components/ai'
 import {
   ContractPreview,
   StepCounterparty,
@@ -18,6 +29,7 @@ import { Modal, ModalFooter } from '@/components/ui/modal'
 import { StepIndicator } from '@/components/ui/step-indicator'
 import { useContractBuilder } from '@/hooks/use-contract-builder'
 import { useUser } from '@/hooks/use-user'
+import type { AiContractDraft } from '@/lib/ai/types'
 import { createContract } from '@/lib/contracts/actions'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
@@ -33,17 +45,17 @@ const STEPS = [
 const STEP_TITLES = [
   'Contract details',
   'Add milestones',
-  'Terms & conditions',
+  'Terms and conditions',
   'Invite counterparty',
-  'Review & send',
+  'Review and send',
 ] as const
 
 const STEP_SUBTITLES = [
   'Give your contract a clear title and set the basic parameters.',
-  'Break the project into milestones. Payment releases per milestone approval.',
+  'Break the work into milestones. Payment releases per approval.',
   'Define what both parties are agreeing to.',
-  'Who is the other party in this contract?',
-  'Review everything carefully. Once sent, terms are locked.',
+  'Add the other party so they can review and sign.',
+  'Review everything carefully before sending.',
 ] as const
 
 const stepVariants = {
@@ -61,12 +73,16 @@ const stepVariants = {
   }),
 }
 
+type EntryMode = 'choose' | 'ai' | 'manual'
+
 function NewContractPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const templateId = searchParams.get('template')
+  const initialMode: EntryMode = templateId ? 'manual' : 'choose'
   const { user } = useUser()
   const loadedTemplateRef = useRef<string | null>(null)
+  const [mode, setMode] = useState<EntryMode>(initialMode)
   const [direction, setDirection] = useState(1)
   const [serverError, setServerError] = useState<string | null>(null)
   const [successModal, setSuccessModal] = useState(false)
@@ -87,6 +103,7 @@ function NewContractPageContent() {
     removeMilestone,
     moveMilestone,
     next,
+    goToStep,
     back,
     clearDraft,
   } = useContractBuilder()
@@ -98,10 +115,11 @@ function NewContractPageContent() {
 
     const activeTemplateId = templateId
     loadedTemplateRef.current = activeTemplateId
+    setMode('manual')
 
     async function loadTemplate() {
       const supabase = createClient()
-      const { data } = await supabase
+      const { data: templateData } = await supabase
         .from('contract_templates')
         .select(
           `
@@ -118,7 +136,7 @@ function NewContractPageContent() {
         .eq('id', activeTemplateId)
         .single()
 
-      const template = data as
+      const template = templateData as
         | (Record<string, unknown> & {
             milestones?: Array<{
               id: string
@@ -148,7 +166,6 @@ function NewContractPageContent() {
       )
 
       if (sortedMilestones.length > 0) {
-        const { nanoid } = await import('nanoid')
         update(
           'milestones',
           sortedMilestones.map((milestone) => ({
@@ -172,7 +189,41 @@ function NewContractPageContent() {
 
   const userName = user?.full_name?.trim() || 'You'
   const previewTitle = data.title.trim() || 'Untitled contract'
-  const previewCounterparty = data.counterparty_email.trim() || 'No counterparty yet'
+  const previewCounterparty =
+    data.counterparty_email.trim() || 'No counterparty yet'
+
+  function handleApplyDraft(draft: AiContractDraft, targetStep = 3) {
+    setServerError(null)
+    setDirection(1)
+    setMode('manual')
+    update('title', draft.title)
+    update('description', draft.description)
+    update('industry', draft.industry)
+    update('currency', draft.currency)
+    update('terms', draft.terms)
+    update(
+      'milestones',
+      draft.milestones.map((milestone) => ({
+        id: nanoid(),
+        title: milestone.title,
+        description: [
+          milestone.description,
+          `Target completion: approximately ${milestone.deadline_days} days from project start.`,
+        ]
+          .filter(Boolean)
+          .join('\n\n'),
+        amount: String(milestone.amount / 100),
+        deadline: '',
+      }))
+    )
+    goToStep(targetStep)
+
+    toast.success(
+      targetStep >= 3
+        ? 'Draft applied. Add the counterparty, then send.'
+        : 'Draft applied. You can edit this section now.'
+    )
+  }
 
   function handleNext() {
     setServerError(null)
@@ -200,12 +251,8 @@ function NewContractPageContent() {
 
     navigator.clipboard
       .writeText(inviteLink)
-      .then(() => {
-        toast.success('Link copied to clipboard')
-      })
-      .catch(() => {
-        toast.error('Could not copy the invite link')
-      })
+      .then(() => toast.success('Link copied to clipboard'))
+      .catch(() => toast.error('Could not copy the invite link'))
   }
 
   function handleSubmit() {
@@ -241,13 +288,128 @@ function NewContractPageContent() {
     })
   }
 
+  if (mode === 'choose') {
+    return (
+      <div className="mx-auto max-w-[680px] pt-8">
+        <div className="mb-10 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className={cn(
+              'rounded-[var(--radius-md)] p-2 text-[hsl(var(--color-text-3))]',
+              'transition-all duration-150',
+              'hover:bg-[hsl(var(--color-surface))] hover:text-[hsl(var(--color-text-1))]'
+            )}
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <h1 className="text-xl font-semibold text-[hsl(var(--color-text-1))]">
+              New contract
+            </h1>
+            <p className="mt-0.5 text-sm text-[hsl(var(--color-text-2))]">
+              Choose the fastest way to get to a send-ready contract.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={() => setMode('ai')}
+            className="group rounded-[var(--radius-xl)] border-2 border-[hsl(var(--color-accent)/0.3)] bg-[hsl(var(--color-accent)/0.05)] p-6 text-left transition-all duration-200 hover:border-[hsl(var(--color-accent)/0.55)] hover:bg-[hsl(var(--color-accent)/0.08)]"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--color-accent)/0.15)] transition-colors duration-200 group-hover:bg-[hsl(var(--color-accent)/0.22)]">
+                <Sparkles size={22} className="text-[hsl(var(--color-accent))]" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex items-center gap-2">
+                  <p className="text-base font-semibold text-[hsl(var(--color-text-1))]">
+                    Describe your deal
+                  </p>
+                  <span className="rounded-full bg-[hsl(var(--color-accent)/0.15)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[hsl(var(--color-accent))]">
+                    AI powered
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed text-[hsl(var(--color-text-2))]">
+                  Tell us what you are agreeing to in plain English. AI drafts
+                  the contract structure, milestones, terms, and risks in
+                  seconds.
+                </p>
+                <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-[hsl(var(--color-accent))]">
+                  <ArrowRight size={13} />
+                  Recommended
+                </div>
+              </div>
+            </div>
+          </motion.button>
+
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.005 }}
+            whileTap={{ scale: 0.995 }}
+            onClick={() => setMode('manual')}
+            className="rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5 text-left transition-all duration-200 hover:border-[hsl(var(--color-border-2))]"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--color-surface-2))]">
+                <PenLine size={18} className="text-[hsl(var(--color-text-3))]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[hsl(var(--color-text-1))]">
+                  Build manually
+                </p>
+                <p className="mt-0.5 text-xs text-[hsl(var(--color-text-3))]">
+                  Fill in each section yourself for full control from the start.
+                </p>
+              </div>
+            </div>
+          </motion.button>
+        </div>
+      </div>
+    )
+  }
+
+  if (mode === 'ai') {
+    return (
+      <div className="mx-auto max-w-[760px]">
+        <div className="mb-8 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMode(templateId ? 'manual' : 'choose')}
+            className={cn(
+              'rounded-[var(--radius-md)] p-2 text-[hsl(var(--color-text-3))]',
+              'transition-all duration-150',
+              'hover:bg-[hsl(var(--color-surface))] hover:text-[hsl(var(--color-text-1))]'
+            )}
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <h1 className="text-xl font-semibold text-[hsl(var(--color-text-1))]">
+              AI contract drafter
+            </h1>
+            <p className="mt-0.5 text-sm text-[hsl(var(--color-text-2))]">
+              Plain English in. Structured contract out.
+            </p>
+          </div>
+        </div>
+
+        <ContractDrafter onUseDraft={handleApplyDraft} />
+      </div>
+    )
+  }
+
   return (
     <>
       <div>
         <div className="mb-8 flex items-center gap-4">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => setMode(templateId ? 'manual' : 'choose')}
             className={cn(
               'rounded-[var(--radius-md)] p-2 text-[hsl(var(--color-text-3))]',
               'transition-all duration-150',
@@ -267,7 +429,10 @@ function NewContractPageContent() {
         </div>
 
         <div className="mb-8 max-w-[640px]">
-          <StepIndicator steps={STEPS.map((stepItem) => ({ label: stepItem.label }))} current={step} />
+          <StepIndicator
+            steps={STEPS.map((stepItem) => ({ label: stepItem.label }))}
+            current={step}
+          />
         </div>
 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
@@ -321,7 +486,11 @@ function NewContractPageContent() {
                     <StepTerms data={data} errors={errors} update={update} />
                   )}
                   {step === 3 && (
-                    <StepCounterparty data={data} errors={errors} update={update} />
+                    <StepCounterparty
+                      data={data}
+                      errors={errors}
+                      update={update}
+                    />
                   )}
                   {step === 4 && (
                     <StepReview
@@ -340,7 +509,6 @@ function NewContractPageContent() {
                 </div>
               )}
             </div>
-
             <div className="flex items-center justify-between border-t border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2)/0.5)] px-6 py-4">
               <Button
                 variant="ghost"

@@ -2,7 +2,7 @@ import { requireAdmin } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AdminDashboardClient } from './admin-dashboard-client'
 
-export const metadata = { title: 'Admin - Contrakts' }
+export const metadata = { title: 'Overview \u00b7 Admin' }
 
 export default async function AdminPage() {
   await requireAdmin('arbitrator')

@@ -2,10 +2,10 @@ import { AdminDisputeQueue, type QueueDispute } from './admin-dispute-queue'
 import { requireAdmin } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export const metadata = { title: 'Arbitration queue - Admin' }
+export const metadata = { title: 'Disputes \u00b7 Admin' }
 
 export default async function AdminDisputesPage() {
-  const admin = await requireAdmin('arbitrator')
+  await requireAdmin('arbitrator')
 
   const supabaseAdmin = createAdminClient()
   const { data: disputes } = await supabaseAdmin
@@ -30,10 +30,43 @@ export default async function AdminDisputesPage() {
     .in('status', ['open', 'awaiting_response', 'under_review', 'clarification', 'appealed'])
     .order('raised_at', { ascending: true })
 
+  const disputeIds = (disputes ?? []).map((dispute: { id: string }) => dispute.id)
+  let analysisMap: Record<
+    string,
+    {
+      dispute_id: string
+      recommended_ruling: string
+      confidence: number
+      auto_resolvable: boolean
+      applied: boolean
+    }
+  > = {}
+
+  if (disputeIds.length > 0) {
+    const { data: analyses } = await supabaseAdmin
+      .from('dispute_ai_analyses')
+      .select(
+        'dispute_id, recommended_ruling, confidence, auto_resolvable, applied'
+      )
+      .in('dispute_id', disputeIds)
+
+    analysisMap = Object.fromEntries(
+      (analyses ?? []).map(
+        (analysis: {
+          dispute_id: string
+          recommended_ruling: string
+          confidence: number
+          auto_resolvable: boolean
+          applied: boolean
+        }) => [analysis.dispute_id, analysis]
+      )
+    )
+  }
+
   return (
     <AdminDisputeQueue
       disputes={(disputes ?? []) as unknown as QueueDispute[]}
-      currentUserId={admin.id}
+      analysisMap={analysisMap}
     />
   )
 }

@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { acceptAiRuling } from '@/lib/ai/dispute-analysis'
 import { issueRuling } from '@/lib/disputes/actions'
 import { formatCurrency } from '@/lib/utils/format-currency'
 import { formatDateTime, formatRelative } from '@/lib/utils/format-date'
@@ -46,6 +48,17 @@ export type QueueDispute = {
   }> | null
 }
 
+type AnalysisMap = Record<
+  string,
+  {
+    dispute_id: string
+    recommended_ruling: string
+    confidence: number
+    auto_resolvable: boolean
+    applied: boolean
+  }
+>
+
 const RULINGS = [
   { value: 'vendor_wins', label: 'Vendor wins' },
   { value: 'client_wins', label: 'Client wins' },
@@ -59,17 +72,19 @@ function reasonLabel(reason: string) {
 
 export function AdminDisputeQueue({
   disputes,
-  currentUserId,
+  analysisMap,
 }: {
   disputes: QueueDispute[]
-  currentUserId: string
+  analysisMap?: AnalysisMap
 }) {
+  const router = useRouter()
   const [selected, setSelected] = useState<QueueDispute | null>(null)
   const [ruling, setRuling] = useState<string>('')
   const [rulingNotes, setRulingNotes] = useState('')
   const [vendorPct, setVendorPct] = useState(50)
   const [rulingModal, setRulingModal] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [isAcceptPending, startAcceptTransition] = useTransition()
 
   const sortedEvidence = useMemo(
     () =>
@@ -117,6 +132,7 @@ export function AdminDisputeQueue({
       }
 
       toast.success('Ruling issued. Distribution has been queued.')
+      router.refresh()
       resetModal()
     })
   }
@@ -161,6 +177,27 @@ export function AdminDisputeQueue({
                 <p className="text-sm text-[hsl(var(--color-text-2))]">
                   {dispute.milestone?.title} - {reasonLabel(dispute.reason)}
                 </p>
+                {analysisMap?.[dispute.id] && (
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span
+                      className={cn(
+                        'rounded-full px-2 py-0.5 text-[10px] font-medium',
+                        'bg-[hsl(var(--color-accent)/0.1)] text-[hsl(var(--color-accent))]'
+                      )}
+                    >
+                      AI:{' '}
+                      {analysisMap[dispute.id].recommended_ruling.replaceAll('_', ' ')}
+                    </span>
+                    <span className="text-[10px] text-[hsl(var(--color-text-3))]">
+                      {analysisMap[dispute.id].confidence}% confidence
+                    </span>
+                    {analysisMap[dispute.id].auto_resolvable && (
+                      <span className="text-[10px] text-[hsl(var(--color-success))]">
+                        Auto-resolve eligible
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[hsl(var(--color-text-3))]">
                   <span>Raised {formatRelative(dispute.raised_at)}</span>
                   {dispute.response_due_at && (
@@ -175,17 +212,43 @@ export function AdminDisputeQueue({
                 </div>
               </div>
 
-              <Button
-                size="sm"
-                variant="secondary"
-                rightIcon={<ChevronRight size={13} />}
-                onClick={() => {
-                  setSelected(dispute)
-                  setRulingModal(true)
-                }}
-              >
-                Review
-              </Button>
+              <div className="flex items-center gap-2">
+                {analysisMap?.[dispute.id] &&
+                  !analysisMap[dispute.id].applied &&
+                  analysisMap[dispute.id].recommended_ruling !==
+                    'insufficient_evidence' && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    loading={isAcceptPending}
+                    onClick={() => {
+                      startAcceptTransition(async () => {
+                        const result = await acceptAiRuling(dispute.id)
+                        if (result.error) {
+                          toast.error(result.error)
+                          return
+                        }
+
+                        toast.success('AI ruling applied.')
+                        router.refresh()
+                      })
+                    }}
+                  >
+                    Accept AI
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  rightIcon={<ChevronRight size={13} />}
+                  onClick={() => {
+                    setSelected(dispute)
+                    setRulingModal(true)
+                  }}
+                >
+                  Review
+                </Button>
+              </div>
             </div>
           ))}
         </div>

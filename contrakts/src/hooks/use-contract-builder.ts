@@ -257,6 +257,14 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
     }
   }, [maxStep, step, validateStep])
 
+  const goToStep = useCallback(
+    (targetStep: number) => {
+      setErrors({})
+      setStep(Math.max(0, Math.min(targetStep, maxStep)))
+    },
+    [maxStep]
+  )
+
   const back = useCallback(() => {
     setErrors({})
     setStep((current) => Math.max(current - 1, 0))
@@ -285,6 +293,7 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
     removeMilestone,
     moveMilestone,
     next,
+    goToStep,
     back,
     validateStep,
     clearDraft,

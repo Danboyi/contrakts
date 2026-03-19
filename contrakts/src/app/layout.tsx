@@ -12,9 +12,16 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'Contrakts', template: '%s · Contrakts' },
-  description: 'Contract execution and escrow for every deal.',
-  icons: { icon: '/favicon.ico' },
+  title: {
+    default: 'Contrakts',
+    template: '%s \u00b7 Contrakts',
+  },
+  description:
+    'Contract execution and escrow protection platform. ' +
+    'Create contracts, protect payments, resolve disputes.',
+  icons: {
+    icon: '/icon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
