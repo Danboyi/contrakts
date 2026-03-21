@@ -230,7 +230,7 @@ export function ProfileClient({
         )}
       >
         {/* Gradient banner */}
-        <div className="h-20 bg-gradient-to-r from-[hsl(var(--color-accent)/0.15)] via-[hsl(var(--color-accent-2)/0.1)] to-[hsl(var(--color-accent)/0.05)]" />
+        <div className="h-20 bg-[hsl(var(--color-accent)/0.08)]" />
 
         <div className="px-6 pb-6">
           <div className="-mt-10 mb-5 flex items-end gap-5">
@@ -385,7 +385,7 @@ export function ProfileClient({
                 className={cn(
                   'group flex items-start gap-4 rounded-[var(--radius-lg)] border border-[hsl(var(--color-gold)/0.2)]',
                   'bg-[hsl(var(--color-gold)/0.05)] p-4 transition-all duration-200',
-                  'hover:border-[hsl(var(--color-gold)/0.3)] hover:shadow-[0_0_20px_hsl(var(--color-gold)/0.06)]'
+                  'hover:border-[hsl(var(--color-gold)/0.3)]'
                 )}
               >
                 <div
@@ -425,7 +425,7 @@ export function ProfileClient({
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-2.5 w-2.5 rounded-full bg-[hsl(var(--color-success))] shadow-[0_0_8px_hsl(var(--color-success)/0.4)] animate-pulse-soft" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-[hsl(var(--color-success))] animate-pulse-soft" />
                   <p className="text-sm font-medium text-[hsl(var(--color-text-1))]">
                     {activeCount} active contract{activeCount !== 1 ? 's' : ''}
                   </p>

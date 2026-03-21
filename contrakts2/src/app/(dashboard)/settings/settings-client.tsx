@@ -77,7 +77,7 @@ const SECTION_ICON_COLORS: Record<string, { color: string; bg: string }> = {
   personal: { color: 'text-[hsl(var(--color-accent))]', bg: 'bg-[hsl(var(--color-accent)/0.1)]' },
   bank: { color: 'text-[hsl(var(--color-success))]', bg: 'bg-[hsl(var(--color-success)/0.1)]' },
   crypto: { color: 'text-[hsl(var(--color-warning))]', bg: 'bg-[hsl(var(--color-warning)/0.1)]' },
-  notifications: { color: 'text-[hsl(var(--color-accent-2))]', bg: 'bg-[hsl(var(--color-accent-2)/0.1)]' },
+  notifications: { color: 'text-[hsl(var(--color-accent))]', bg: 'bg-[hsl(var(--color-accent)/0.1)]' },
   api: { color: 'text-[hsl(var(--color-text-2))]', bg: 'bg-[hsl(var(--color-surface-2))]' },
   danger: { color: 'text-[hsl(var(--color-danger))]', bg: 'bg-[hsl(var(--color-danger)/0.08)]' },
 }
@@ -385,7 +385,7 @@ function PreferenceSwitch({
       <span
         className={cn(
           'relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200',
-          enabled ? 'bg-[hsl(var(--color-accent))] shadow-[0_0_8px_hsl(var(--color-accent)/0.3)]' : 'bg-[hsl(var(--color-border))]'
+          enabled ? 'bg-[hsl(var(--color-accent))]' : 'bg-[hsl(var(--color-border))]'
         )}
       >
         <span
@@ -738,7 +738,7 @@ function ApiKeysSection({ profile }: { profile: User }) {
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-200',
                     scopes.includes(scope)
-                      ? 'border-[hsl(var(--color-accent))] bg-[hsl(var(--color-accent))] shadow-[0_0_6px_hsl(var(--color-accent)/0.3)]'
+                      ? 'border-[hsl(var(--color-accent))] bg-[hsl(var(--color-accent))]'
                       : 'border-[hsl(var(--color-border-2))] bg-transparent hover:border-[hsl(var(--color-accent)/0.5)]'
                   )}
                 >

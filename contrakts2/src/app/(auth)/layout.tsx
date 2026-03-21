@@ -108,7 +108,7 @@ function FloatingContractCard({
             initial={{ width: 0 }}
             animate={{ width: `${card.progress}%` }}
             transition={{ duration: 1, delay: card.delay + 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="h-full rounded-full bg-gradient-to-r from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]"
+            className="h-full rounded-full bg-[hsl(var(--color-accent))]"
           />
         </div>
       </div>
@@ -138,12 +138,9 @@ export default function AuthLayout({
     <div className="flex min-h-screen bg-[hsl(var(--color-bg))]">
       {/* Left panel — visual showcase */}
       <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden border-r border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-12 md:flex">
-        {/* Animated gradient orbs */}
+        {/* Ambient background depth */}
         <div className="pointer-events-none absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,hsl(var(--color-accent)/0.08)_0%,transparent_70%)]" />
-        <div
-          className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,hsl(var(--color-accent-2)/0.06)_0%,transparent_70%)]"
-          style={{ animation: 'gradientShift 20s ease infinite' }}
-        />
+        <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[radial-gradient(circle,hsl(var(--color-accent)/0.05)_0%,transparent_70%)]" />
 
         {/* Grid overlay */}
         <div className="bg-grid pointer-events-none absolute inset-0 opacity-30" />
@@ -156,7 +153,7 @@ export default function AuthLayout({
           className="relative z-10"
         >
           <div className="mb-2 flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))]">
               <Shield size={16} className="text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight text-[hsl(var(--color-text-1))]">
@@ -215,7 +212,7 @@ export default function AuthLayout({
         >
           {/* Mobile branding */}
           <div className="mb-8 flex items-center gap-2.5 md:hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))]">
               <Shield size={16} className="text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight text-[hsl(var(--color-text-1))]">

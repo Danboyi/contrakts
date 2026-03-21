@@ -136,7 +136,7 @@ export function Sidebar({
     <div className="flex h-full flex-col py-4">
       {/* Logo */}
       <div className="mb-6 flex h-8 items-center gap-2.5 px-5">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))]">
           <Shield size={13} className="text-white" />
         </div>
         <span className="text-md font-bold tracking-tight text-[hsl(var(--color-text-1))]">

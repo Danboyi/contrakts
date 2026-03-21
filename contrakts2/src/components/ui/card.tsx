@@ -35,7 +35,7 @@ function Card({
         selected && [
           'border-[hsl(var(--color-accent)/0.5)]',
           'bg-[hsl(var(--color-accent)/0.04)]',
-          'shadow-glow-accent-sm',
+          'shadow-ring-accent',
         ],
         className
       )}

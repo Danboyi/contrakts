@@ -181,7 +181,7 @@ export default function NotificationsPage() {
                   </p>
                 </div>
                 {!notification.read && (
-                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[hsl(var(--color-accent))] shadow-[0_0_8px_hsl(var(--color-accent)/0.4)]" />
+                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[hsl(var(--color-accent))]" />
                 )}
               </button>
             )

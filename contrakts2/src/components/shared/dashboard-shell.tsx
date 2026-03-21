@@ -90,7 +90,7 @@ export function DashboardShell({
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))] text-white shadow-[0_0_16px_hsl(var(--color-accent)/0.3)] transition-transform active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[hsl(var(--color-accent))] text-white shadow-sm transition-transform active:scale-95"
               >
                 <item.icon size={18} />
               </Link>

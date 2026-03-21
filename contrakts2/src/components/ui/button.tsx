@@ -20,8 +20,7 @@ const buttonVariants = cva(
         primary: [
           'bg-[hsl(var(--color-accent))] text-white',
           'hover:bg-[hsl(var(--color-accent-hover))]',
-          'hover:shadow-[0_0_20px_hsl(var(--color-accent)/0.25)]',
-          'shadow-sm',
+          'shadow-sm hover:shadow-md',
         ],
         secondary: [
           'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-1))]',
@@ -36,7 +35,7 @@ const buttonVariants = cva(
         ],
         destructive: [
           'bg-[hsl(var(--color-danger))] text-white',
-          'hover:shadow-[0_0_20px_hsl(var(--color-danger)/0.25)]',
+          'shadow-sm hover:shadow-md',
         ],
         outline: [
           'bg-transparent text-[hsl(var(--color-text-1))]',

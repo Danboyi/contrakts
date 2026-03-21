@@ -190,7 +190,7 @@ export function Header({
           <Menu size={18} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+          <div className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-[hsl(var(--color-accent))]">
             <Shield size={12} className="text-white" />
           </div>
           <span className="text-sm font-bold text-[hsl(var(--color-text-1))]">

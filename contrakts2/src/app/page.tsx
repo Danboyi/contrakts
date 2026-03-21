@@ -76,7 +76,7 @@ export default async function LandingPage() {
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-[hsl(var(--color-border)/0.5)]">
         <div className="glass-strong mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))]">
               <Shield size={16} className="text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight text-[hsl(var(--color-text-1))]">
@@ -92,7 +92,7 @@ export default async function LandingPage() {
             </Link>
             <Link
               href="/signup"
-              className="rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))] px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_hsl(var(--color-accent)/0.3)]"
+              className="rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
             >
               Get started
             </Link>
@@ -105,7 +105,7 @@ export default async function LandingPage() {
         {/* Background effects */}
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-20" />
         <div className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,hsl(var(--color-accent)/0.12)_0%,transparent_70%)]" />
-        <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] bg-[radial-gradient(circle,hsl(var(--color-accent-2)/0.08)_0%,transparent_70%)]" />
+        <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] bg-[radial-gradient(circle,hsl(var(--color-accent)/0.06)_0%,transparent_70%)]" />
 
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           {/* Badge */}
@@ -119,7 +119,7 @@ export default async function LandingPage() {
           {/* Headline */}
           <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-[hsl(var(--color-text-1))] md:text-5xl lg:text-[56px]">
             Every deal.{' '}
-            <span className="text-gradient">Protected.</span>
+            <span className="text-[hsl(var(--color-accent))]">Protected.</span>
           </h1>
 
           <p className="mx-auto mb-10 max-w-2xl text-md leading-relaxed text-[hsl(var(--color-text-2))] md:text-lg">
@@ -131,7 +131,7 @@ export default async function LandingPage() {
           <div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/signup"
-              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:shadow-[0_0_30px_hsl(var(--color-accent)/0.35)]"
+              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
             >
               Start for free
               <ArrowRight
@@ -151,7 +151,7 @@ export default async function LandingPage() {
           <div className="mx-auto grid max-w-2xl grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label}>
-                <p className="text-2xl font-bold text-gradient">{stat.value}</p>
+                <p className="text-2xl font-bold text-[hsl(var(--color-accent))]">{stat.value}</p>
                 <p className="mt-1 text-xs text-[hsl(var(--color-text-3))]">
                   {stat.label}
                 </p>
@@ -219,7 +219,7 @@ export default async function LandingPage() {
             ].map(({ step, title, desc }) => (
               <div key={step} className="text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-[hsl(var(--color-accent)/0.3)] bg-[hsl(var(--color-accent-dim))]">
-                  <span className="text-sm font-bold text-gradient">{step}</span>
+                  <span className="text-sm font-bold text-[hsl(var(--color-accent))]">{step}</span>
                 </div>
                 <h3 className="mb-2 text-md font-semibold text-[hsl(var(--color-text-1))]">
                   {title}
@@ -256,7 +256,7 @@ export default async function LandingPage() {
       {/* CTA */}
       <section className="border-t border-[hsl(var(--color-border)/0.5)] py-24">
         <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[var(--radius-2xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-8 py-16 text-center md:px-16">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-animated opacity-60" />
+          <div className="pointer-events-none absolute inset-0 bg-[hsl(var(--color-accent)/0.03)]" />
           <div className="relative z-10">
             <h2 className="mb-4 text-2xl font-bold text-[hsl(var(--color-text-1))] md:text-3xl">
               Ready to protect your next deal?
@@ -267,7 +267,7 @@ export default async function LandingPage() {
             </p>
             <Link
               href="/signup"
-              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:shadow-[0_0_30px_hsl(var(--color-accent)/0.35)]"
+              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
             >
               Get started free
               <ArrowRight
@@ -283,7 +283,7 @@ export default async function LandingPage() {
       <footer className="border-t border-[hsl(var(--color-border)/0.5)] py-12">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-gradient-to-br from-[hsl(var(--color-accent))] to-[hsl(var(--color-accent-2))]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-[hsl(var(--color-accent))]">
               <Shield size={12} className="text-white" />
             </div>
             <span className="text-sm font-semibold text-[hsl(var(--color-text-1))]">
