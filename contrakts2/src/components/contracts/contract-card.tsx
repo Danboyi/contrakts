@@ -20,6 +20,17 @@ const INDUSTRY_LABELS: Record<string, string> = {
   other: 'Services',
 }
 
+const STATE_BORDER_COLORS: Record<string, string> = {
+  active: 'border-l-[hsl(var(--color-success)/0.6)]',
+  funded: 'border-l-[hsl(var(--color-success)/0.6)]',
+  in_review: 'border-l-[hsl(var(--color-warning)/0.6)]',
+  pending: 'border-l-[hsl(var(--color-accent)/0.5)]',
+  disputed: 'border-l-[hsl(var(--color-danger)/0.6)]',
+  complete: 'border-l-[hsl(var(--color-success)/0.4)]',
+  draft: 'border-l-[hsl(var(--color-text-3)/0.3)]',
+  voided: 'border-l-[hsl(var(--color-text-3)/0.3)]',
+}
+
 interface ContractCardProps {
   contract: Contract & {
     initiator?: { full_name: string; avatar_url?: string | null } | null
@@ -37,20 +48,23 @@ export function ContractCard({ contract, compact }: ContractCardProps) {
     ['submitted', 'in_progress', 'in_review'].includes(milestone.state)
   ).length
 
+  const borderColor = STATE_BORDER_COLORS[contract.state] ?? ''
+
   return (
     <Link
       href={`/contracts/${contract.id}`}
       className={cn(
-        'block rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5',
-        'transition-all duration-150',
-        'hover:border-[hsl(var(--color-border-2))] hover:bg-[hsl(var(--color-surface-2)/0.4)]',
+        'group block rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] border-l-2 bg-[hsl(var(--color-surface))]',
+        'transition-all duration-200',
+        'hover:border-[hsl(var(--color-border-2))] hover:shadow-card hover:-translate-y-0.5',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--color-accent)/0.4)]',
-        compact && 'p-4'
+        borderColor,
+        compact ? 'p-4' : 'p-5'
       )}
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="mb-1 font-mono text-[11px] tracking-wide text-[hsl(var(--color-text-3))]">
+          <p className="mb-1 font-mono text-2xs tracking-wide text-[hsl(var(--color-text-3))]">
             {contract.ref_code}
           </p>
           <h3
@@ -97,7 +111,7 @@ export function ContractCard({ contract, compact }: ContractCardProps) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="rounded-[var(--radius-sm)] bg-[hsl(var(--color-surface-2))] px-2 py-1 text-xs font-medium text-[hsl(var(--color-text-3))]">
+          <span className="rounded-[var(--radius-sm)] bg-[hsl(var(--color-surface-2))] px-2 py-1 text-xs font-medium text-[hsl(var(--color-text-3))] transition-colors group-hover:bg-[hsl(var(--color-surface-3))]">
             {INDUSTRY_LABELS[contract.industry] ?? contract.industry}
           </span>
         </div>
@@ -105,7 +119,7 @@ export function ContractCard({ contract, compact }: ContractCardProps) {
           <p className="text-sm font-semibold text-[hsl(var(--color-text-1))]">
             {formatCurrency(contract.total_value, contract.currency)}
           </p>
-          <p className="mt-0.5 text-[11px] text-[hsl(var(--color-text-3))]">
+          <p className="mt-0.5 text-2xs text-[hsl(var(--color-text-3))]">
             {formatRelative(contract.created_at)}
           </p>
         </div>

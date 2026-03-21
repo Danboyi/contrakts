@@ -24,61 +24,61 @@ const EVENT_MAP: Record<
   'contract.created': {
     icon: FileText,
     color: 'text-[hsl(var(--color-accent))]',
-    bg: 'bg-[hsl(var(--color-accent)/0.1)]',
+    bg: 'bg-[hsl(var(--color-accent-dim))]',
     label: () => 'Contract created',
   },
   'contract.sent': {
     icon: Send,
     color: 'text-[hsl(var(--color-accent))]',
-    bg: 'bg-[hsl(var(--color-accent)/0.1)]',
+    bg: 'bg-[hsl(var(--color-accent-dim))]',
     label: () => 'Invite sent',
   },
   'contract.signed': {
     icon: PenLine,
     color: 'text-[hsl(var(--color-warning))]',
-    bg: 'bg-[hsl(var(--color-warning)/0.1)]',
+    bg: 'bg-[hsl(var(--color-warning-dim))]',
     label: () => 'Contract signed',
   },
   'contract.funded': {
     icon: DollarSign,
     color: 'text-[hsl(var(--color-success))]',
-    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    bg: 'bg-[hsl(var(--color-success-dim))]',
     label: () => 'Escrow funded',
   },
   'milestone.submitted': {
     icon: Clock,
     color: 'text-[hsl(var(--color-warning))]',
-    bg: 'bg-[hsl(var(--color-warning)/0.1)]',
+    bg: 'bg-[hsl(var(--color-warning-dim))]',
     label: () => 'Delivery submitted',
   },
   'milestone.approved': {
     icon: CheckCircle,
     color: 'text-[hsl(var(--color-success))]',
-    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    bg: 'bg-[hsl(var(--color-success-dim))]',
     label: () => 'Milestone approved',
   },
   'payment.released': {
     icon: DollarSign,
     color: 'text-[hsl(var(--color-success))]',
-    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    bg: 'bg-[hsl(var(--color-success-dim))]',
     label: () => 'Payment released',
   },
   'dispute.raised': {
     icon: AlertTriangle,
     color: 'text-[hsl(var(--color-danger))]',
-    bg: 'bg-[hsl(var(--color-danger)/0.1)]',
+    bg: 'bg-[hsl(var(--color-danger-dim))]',
     label: () => 'Dispute raised',
   },
   'dispute.resolved': {
     icon: Shield,
     color: 'text-[hsl(var(--color-success))]',
-    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    bg: 'bg-[hsl(var(--color-success-dim))]',
     label: () => 'Dispute resolved',
   },
   'contract.complete': {
     icon: CheckCircle,
     color: 'text-[hsl(var(--color-success))]',
-    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    bg: 'bg-[hsl(var(--color-success-dim))]',
     label: () => 'Contract completed',
   },
 }
@@ -111,11 +111,11 @@ export function ActivityItem({
       <div className="flex shrink-0 flex-col items-center">
         <div
           className={cn(
-            'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
+            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-transform duration-200 hover:scale-110',
             config.bg
           )}
         >
-          <Icon size={13} className={config.color} />
+          <Icon size={14} className={config.color} />
         </div>
         {!last && (
           <div className="mt-1.5 w-px flex-1 bg-[hsl(var(--color-border))]" />
@@ -128,12 +128,14 @@ export function ActivityItem({
         </p>
         <div className="mt-1 flex items-center gap-2">
           {actor_name && (
-            <span className="text-xs text-[hsl(var(--color-text-3))]">
-              {actor_name}
-            </span>
-          )}
-          {actor_name && (
-            <span className="text-xs text-[hsl(var(--color-border-2))]">-</span>
+            <>
+              <span className="text-xs font-medium text-[hsl(var(--color-text-2))]">
+                {actor_name}
+              </span>
+              <span className="text-2xs text-[hsl(var(--color-border-2))]">
+                &middot;
+              </span>
+            </>
           )}
           <span className="text-xs text-[hsl(var(--color-text-3))]">
             {formatRelative(created_at)}

@@ -29,6 +29,8 @@ export function EmptyState({
     <div
       className={cn(
         'flex flex-col items-center justify-center text-center',
+        'rounded-[var(--radius-lg)] border border-dashed border-[hsl(var(--color-border))]',
+        'bg-[hsl(var(--color-surface)/0.5)]',
         size === 'md' ? 'px-8 py-16' : 'px-4 py-8',
         className
       )}
@@ -36,8 +38,10 @@ export function EmptyState({
       {icon && (
         <div
           className={cn(
-            'flex items-center justify-center rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))]',
-            'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-3))]',
+            'flex items-center justify-center rounded-[var(--radius-lg)]',
+            'border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))]',
+            'text-[hsl(var(--color-text-3))]',
+            'animate-fade-in',
             size === 'md' ? 'mb-5 p-4' : 'mb-4 p-3'
           )}
         >
@@ -66,7 +70,7 @@ export function EmptyState({
         action.href ? (
           <Link href={action.href} className="inline-flex">
             <Button
-              variant="secondary"
+              variant="primary"
               size={size === 'md' ? 'md' : 'sm'}
               leftIcon={action.icon}
             >
@@ -75,7 +79,7 @@ export function EmptyState({
           </Link>
         ) : (
           <Button
-            variant="secondary"
+            variant="primary"
             size={size === 'md' ? 'md' : 'sm'}
             leftIcon={action.icon}
             onClick={action.onClick}

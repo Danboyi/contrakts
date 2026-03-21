@@ -3,22 +3,13 @@
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { ArrowRight, Check, Loader2, Lock, Mail, User } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { signUp } from '@/lib/auth/actions'
 
 const passwordRules = [
   { label: 'At least 8 characters', test: (value: string) => value.length >= 8 },
   { label: 'Contains a number', test: (value: string) => /\d/.test(value) },
 ]
-
-function getInputFocusStyles(target: HTMLInputElement) {
-  target.style.borderColor = 'hsl(var(--color-accent))'
-  target.style.boxShadow = '0 0 0 3px hsl(var(--color-accent) / 0.12)'
-}
-
-function resetInputFocusStyles(target: HTMLInputElement) {
-  target.style.borderColor = 'hsl(var(--color-border))'
-  target.style.boxShadow = 'none'
-}
 
 export function SignupClient() {
   const [error, setError] = useState<string | null>(null)
@@ -30,258 +21,139 @@ export function SignupClient() {
     event.preventDefault()
     setError(null)
     const formData = new FormData(event.currentTarget)
-
     startTransition(async () => {
       const result = await signUp(formData)
-      if (result?.error) {
-        setError(result.error)
-      }
-      if (result?.success) {
-        setSuccess(true)
-      }
+      if (result?.error) setError(result.error)
+      if (result?.success) setSuccess(true)
     })
-  }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    height: '44px',
-    padding: '0 14px 0 40px',
-    background: 'hsl(var(--color-surface-2))',
-    border: '0.5px solid hsl(var(--color-border))',
-    borderRadius: 'var(--radius-md)',
-    color: 'hsl(var(--color-text-1))',
-    fontSize: '14px',
-    outline: 'none',
-    transition: 'border-color 150ms ease, box-shadow 150ms ease',
-  }
-
-  const iconStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: '12px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: 'hsl(var(--color-text-3))',
-    pointerEvents: 'none',
   }
 
   if (success) {
     return (
-      <div style={{ textAlign: 'center' }}>
-        <div
-          style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'hsl(var(--color-success) / 0.12)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 20px',
-          }}
-        >
-          <Check size={24} color="hsl(var(--color-success))" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center"
+      >
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--color-success-dim))]">
+          <Check size={24} className="text-[hsl(var(--color-success))]" />
         </div>
-        <h2
-          style={{
-            fontSize: '22px',
-            fontWeight: 600,
-            color: 'hsl(var(--color-text-1))',
-            marginBottom: '10px',
-          }}
-        >
+        <h2 className="mb-2.5 text-xl font-semibold text-[hsl(var(--color-text-1))]">
           Verify your email
         </h2>
-        <p
-          style={{
-            fontSize: '14px',
-            color: 'hsl(var(--color-text-2))',
-            lineHeight: '1.6',
-            marginBottom: '28px',
-          }}
-        >
+        <p className="mb-7 text-sm leading-relaxed text-[hsl(var(--color-text-2))]">
           We sent a confirmation link to your inbox. Click it to activate your
           account, then sign in.
         </p>
         <Link
           href="/login"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: 'hsl(var(--color-accent))',
-            textDecoration: 'none',
-          }}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[hsl(var(--color-accent))] transition-colors hover:text-[hsl(var(--color-accent-hover))]"
         >
           Go to sign in
           <ArrowRight size={14} />
         </Link>
-      </div>
+      </motion.div>
     )
   }
 
   return (
     <div>
-      <h2
-        style={{
-          fontSize: '24px',
-          fontWeight: 600,
-          color: 'hsl(var(--color-text-1))',
-          marginBottom: '8px',
-        }}
-      >
+      <h2 className="mb-2 text-xl font-semibold text-[hsl(var(--color-text-1))]">
         Create your account
       </h2>
-      <p
-        style={{
-          fontSize: '14px',
-          color: 'hsl(var(--color-text-2))',
-          marginBottom: '32px',
-        }}
-      >
+      <p className="mb-8 text-sm text-[hsl(var(--color-text-2))]">
         Start protecting every deal you make.
       </p>
 
       <form onSubmit={handleSignUp}>
-        <div style={{ position: 'relative', marginBottom: '12px' }}>
-          <User size={15} style={iconStyle} />
+        <div className="relative mb-3">
+          <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[hsl(var(--color-text-3))]" />
           <input
             name="full_name"
             type="text"
             placeholder="Full name"
             required
             autoFocus
-            style={inputStyle}
-            onFocus={(event) => getInputFocusStyles(event.target)}
-            onBlur={(event) => resetInputFocusStyles(event.target)}
+            className="auth-input"
           />
         </div>
 
-        <div style={{ position: 'relative', marginBottom: '12px' }}>
-          <Mail size={15} style={iconStyle} />
+        <div className="relative mb-3">
+          <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[hsl(var(--color-text-3))]" />
           <input
             name="email"
             type="email"
             placeholder="Email address"
             required
-            style={inputStyle}
-            onFocus={(event) => getInputFocusStyles(event.target)}
-            onBlur={(event) => resetInputFocusStyles(event.target)}
+            className="auth-input"
           />
         </div>
 
-        <div style={{ position: 'relative', marginBottom: '8px' }}>
-          <Lock size={15} style={iconStyle} />
+        <div className="relative mb-2">
+          <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[hsl(var(--color-text-3))]" />
           <input
             name="password"
             type="password"
             placeholder="Password"
             required
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            style={inputStyle}
-            onFocus={(event) => getInputFocusStyles(event.target)}
-            onBlur={(event) => resetInputFocusStyles(event.target)}
+            onChange={(e) => setPassword(e.target.value)}
+            className="auth-input"
           />
         </div>
 
         {password.length > 0 && (
-          <div
-            style={{
-              display: 'flex',
-              gap: '16px',
-              marginBottom: '16px',
-              paddingLeft: '2px',
-              flexWrap: 'wrap',
-            }}
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mb-4 flex flex-wrap gap-4 pl-0.5"
           >
             {passwordRules.map((rule) => {
               const passed = rule.test(password)
               return (
-                <div
-                  key={rule.label}
-                  style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
-                >
+                <div key={rule.label} className="flex items-center gap-1.5">
                   <div
-                    style={{
-                      width: '14px',
-                      height: '14px',
-                      borderRadius: '50%',
-                      background: passed
-                        ? 'hsl(var(--color-success) / 0.15)'
-                        : 'hsl(var(--color-border))',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'background 200ms ease',
-                    }}
+                    className={`flex h-3.5 w-3.5 items-center justify-center rounded-full transition-colors duration-200 ${
+                      passed
+                        ? 'bg-[hsl(var(--color-success-dim))]'
+                        : 'bg-[hsl(var(--color-border))]'
+                    }`}
                   >
                     {passed && (
                       <Check
                         size={8}
-                        color="hsl(var(--color-success))"
+                        className="text-[hsl(var(--color-success))]"
                         strokeWidth={3}
                       />
                     )}
                   </div>
                   <span
-                    style={{
-                      fontSize: '12px',
-                      color: passed
-                        ? 'hsl(var(--color-success))'
-                        : 'hsl(var(--color-text-3))',
-                      transition: 'color 200ms ease',
-                    }}
+                    className={`text-xs transition-colors duration-200 ${
+                      passed
+                        ? 'text-[hsl(var(--color-success))]'
+                        : 'text-[hsl(var(--color-text-3))]'
+                    }`}
                   >
                     {rule.label}
                   </span>
                 </div>
               )
             })}
-          </div>
+          </motion.div>
         )}
 
         {error && (
-          <div
-            style={{
-              padding: '10px 14px',
-              marginBottom: '16px',
-              background: 'hsl(var(--color-danger) / 0.1)',
-              border: '0.5px solid hsl(var(--color-danger) / 0.3)',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '13px',
-              color: 'hsl(var(--color-danger))',
-            }}
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 rounded-[var(--radius-md)] border border-[hsl(var(--color-danger)/0.3)] bg-[hsl(var(--color-danger-dim))] px-3.5 py-2.5 text-sm text-[hsl(var(--color-danger))]"
           >
             {error}
-          </div>
+          </motion.div>
         )}
 
-        <button
-          type="submit"
-          disabled={isPending}
-          style={{
-            width: '100%',
-            height: '44px',
-            marginBottom: '16px',
-            background: isPending
-              ? 'hsl(var(--color-accent) / 0.6)'
-              : 'hsl(var(--color-accent))',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: isPending ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 150ms ease',
-          }}
-          className="hover:brightness-110 active:scale-[0.98]"
-        >
+        <button type="submit" disabled={isPending} className="auth-btn">
           {isPending ? (
             <>
               <Loader2 size={16} className="animate-spin" />
@@ -296,43 +168,23 @@ export function SignupClient() {
         </button>
       </form>
 
-      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-        <span style={{ fontSize: '13px', color: 'hsl(var(--color-text-3))' }}>
-          Already have an account?{' '}
-        </span>
+      <p className="mb-6 text-center text-sm text-[hsl(var(--color-text-3))]">
+        Already have an account?{' '}
         <Link
           href="/login"
-          style={{
-            fontSize: '13px',
-            color: 'hsl(var(--color-accent))',
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
+          className="font-medium text-[hsl(var(--color-accent))] transition-colors hover:text-[hsl(var(--color-accent-hover))]"
         >
           Sign in
         </Link>
-      </div>
+      </p>
 
-      <p
-        style={{
-          fontSize: '12px',
-          color: 'hsl(var(--color-text-3))',
-          textAlign: 'center',
-          lineHeight: '1.6',
-        }}
-      >
+      <p className="text-center text-xs leading-relaxed text-[hsl(var(--color-text-3))]">
         By creating an account you agree to the{' '}
-        <a
-          href="#"
-          style={{ color: 'hsl(var(--color-text-2))', textDecoration: 'none' }}
-        >
+        <a href="#" className="text-[hsl(var(--color-text-2))] transition-colors hover:text-[hsl(var(--color-text-1))]">
           Terms of Service
         </a>{' '}
         and{' '}
-        <a
-          href="#"
-          style={{ color: 'hsl(var(--color-text-2))', textDecoration: 'none' }}
-        >
+        <a href="#" className="text-[hsl(var(--color-text-2))] transition-colors hover:text-[hsl(var(--color-text-1))]">
           Privacy Policy
         </a>
         .

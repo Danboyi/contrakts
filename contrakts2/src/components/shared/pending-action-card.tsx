@@ -12,19 +12,22 @@ interface PendingActionProps {
 
 const variantMap = {
   warning: {
-    border: 'border-l-[hsl(var(--color-warning)/0.5)]',
+    border: 'border-l-[hsl(var(--color-warning)/0.6)]',
     dot: 'bg-[hsl(var(--color-warning))]',
-    badge: 'bg-[hsl(var(--color-warning)/0.1)] text-[hsl(var(--color-warning))]',
+    badge: 'bg-[hsl(var(--color-warning-dim))] text-[hsl(var(--color-warning))]',
+    glow: 'group-hover:shadow-[inset_0_0_20px_hsl(var(--color-warning)/0.04)]',
   },
   danger: {
-    border: 'border-l-[hsl(var(--color-danger)/0.5)]',
-    dot: 'bg-[hsl(var(--color-danger))]',
-    badge: 'bg-[hsl(var(--color-danger)/0.1)] text-[hsl(var(--color-danger))]',
+    border: 'border-l-[hsl(var(--color-danger)/0.6)]',
+    dot: 'bg-[hsl(var(--color-danger))] animate-pulse-soft',
+    badge: 'bg-[hsl(var(--color-danger-dim))] text-[hsl(var(--color-danger))]',
+    glow: 'group-hover:shadow-[inset_0_0_20px_hsl(var(--color-danger)/0.04)]',
   },
   accent: {
-    border: 'border-l-[hsl(var(--color-accent)/0.5)]',
+    border: 'border-l-[hsl(var(--color-accent)/0.6)]',
     dot: 'bg-[hsl(var(--color-accent))]',
-    badge: 'bg-[hsl(var(--color-accent)/0.1)] text-[hsl(var(--color-accent))]',
+    badge: 'bg-[hsl(var(--color-accent-dim))] text-[hsl(var(--color-accent))]',
+    glow: 'group-hover:shadow-[inset_0_0_20px_hsl(var(--color-accent)/0.04)]',
   },
 } as const
 
@@ -42,9 +45,10 @@ export function PendingActionCard({
       href={href}
       className={cn(
         'group block rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] border-l-2 p-4',
-        'bg-[hsl(var(--color-surface))] transition-all duration-150',
-        'hover:border-[hsl(var(--color-border-2))]',
-        styles.border
+        'bg-[hsl(var(--color-surface))] transition-all duration-200',
+        'hover:border-[hsl(var(--color-border-2))] hover:shadow-card',
+        styles.border,
+        styles.glow
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -53,7 +57,7 @@ export function PendingActionCard({
             <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', styles.dot)} />
             <span
               className={cn(
-                'rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                'rounded-full px-2 py-0.5 text-2xs font-semibold',
                 styles.badge
               )}
             >
@@ -69,10 +73,7 @@ export function PendingActionCard({
         </div>
         <ArrowRight
           size={15}
-          className={cn(
-            'mt-0.5 shrink-0 text-[hsl(var(--color-text-3))] transition-all duration-150',
-            'group-hover:translate-x-0.5 group-hover:text-[hsl(var(--color-text-2))]'
-          )}
+          className="mt-0.5 shrink-0 text-[hsl(var(--color-text-3))] transition-all duration-200 group-hover:translate-x-1 group-hover:text-[hsl(var(--color-text-2))]"
         />
       </div>
     </Link>

@@ -7,6 +7,7 @@ import {
   FileText,
   Plus,
   Shield,
+  TrendingUp,
 } from 'lucide-react'
 import { ContractCard } from '@/components/contracts/contract-card'
 import { ActivityItem } from '@/components/shared/activity-item'
@@ -172,7 +173,8 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* Quick action cards — bento grid */}
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <MetricCard
           label="Active contracts"
           value={activeContracts.length}
@@ -181,24 +183,23 @@ export default async function DashboardPage() {
               ? '1 in progress'
               : `${activeContracts.length} in progress`
           }
-          icon={<FileText size={14} className="text-[hsl(var(--color-text-3))]" />}
+          icon={<FileText size={14} className="text-[hsl(var(--color-accent))]" />}
+          accentColor="accent"
         />
         <MetricCard
           label="Escrow held"
           value={formatCurrency(escrowHeld, 'USD')}
           sub="Across active contracts"
-          icon={
-            <DollarSign size={14} className="text-[hsl(var(--color-text-3))]" />
-          }
+          icon={<DollarSign size={14} className="text-[hsl(var(--color-success))]" />}
+          accentColor="success"
         />
         <MetricCard
           label="Completed"
           value={completedContracts.length}
           sub="All time"
           trend={completedContracts.length > 0 ? 'up' : 'neutral'}
-          icon={
-            <CheckCircle size={14} className="text-[hsl(var(--color-text-3))]" />
-          }
+          icon={<CheckCircle size={14} className="text-[hsl(var(--color-success))]" />}
+          accentColor="success"
         />
         <MetricCard
           label="Trust score"
@@ -211,11 +212,14 @@ export default async function DashboardPage() {
                 : 'Needs attention'
           }
           trend={profile.trust_score >= 75 ? 'up' : 'down'}
-          icon={<Shield size={14} className="text-[hsl(var(--color-text-3))]" />}
+          icon={<Shield size={14} className="text-[hsl(var(--color-gold))]" />}
+          accentColor="gold"
         />
       </div>
 
+      {/* Main content grid */}
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-5">
+        {/* Recent contracts */}
         <div className="lg:col-span-3">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-[hsl(var(--color-text-1))]">
@@ -223,9 +227,13 @@ export default async function DashboardPage() {
             </h2>
             <Link
               href="/contracts"
-              className="flex items-center gap-1 text-xs text-[hsl(var(--color-text-3))] transition-colors hover:text-[hsl(var(--color-text-2))]"
+              className="group flex items-center gap-1 text-xs text-[hsl(var(--color-text-3))] transition-colors hover:text-[hsl(var(--color-accent))]"
             >
-              View all <ArrowRight size={11} />
+              View all{' '}
+              <ArrowRight
+                size={11}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
             </Link>
           </div>
 
@@ -233,7 +241,7 @@ export default async function DashboardPage() {
             <EmptyState
               icon={<FileText size={22} />}
               title="No contracts yet"
-              description="Create your first contract to get started."
+              description="Create your first contract to get started with escrow protection."
               action={{
                 label: 'Create contract',
                 href: '/contracts/new',
@@ -243,20 +251,27 @@ export default async function DashboardPage() {
             />
           ) : (
             <div className="flex flex-col gap-3">
-              {recentContracts.map((contract) => (
-                <ContractCard key={contract.id} contract={contract} compact />
+              {recentContracts.map((contract, index) => (
+                <div
+                  key={contract.id}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${index * 60}ms` }}
+                >
+                  <ContractCard contract={contract} compact />
+                </div>
               ))}
             </div>
           )}
         </div>
 
+        {/* Pending actions */}
         <div className="lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-[hsl(var(--color-text-1))]">
               Pending actions
             </h2>
             {pendingActions.length > 0 && (
-              <span className="rounded-full bg-[hsl(var(--color-warning)/0.12)] px-1.5 py-0.5 text-[10px] font-semibold text-[hsl(var(--color-warning))]">
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[hsl(var(--color-warning-dim))] px-1.5 text-2xs font-bold text-[hsl(var(--color-warning))]">
                 {pendingActions.length}
               </span>
             )}
@@ -264,10 +279,12 @@ export default async function DashboardPage() {
 
           {pendingActions.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[hsl(var(--color-border))] px-6 py-10 text-center">
-              <CheckCircle
-                size={20}
-                className="mb-3 text-[hsl(var(--color-success))]"
-              />
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[hsl(var(--color-success-dim))]">
+                <CheckCircle
+                  size={18}
+                  className="text-[hsl(var(--color-success))]"
+                />
+              </div>
               <p className="mb-1 text-sm font-medium text-[hsl(var(--color-text-1))]">
                 All caught up
               </p>
@@ -278,19 +295,26 @@ export default async function DashboardPage() {
           ) : (
             <div className="flex flex-col gap-3">
               {pendingActions.map((action, index) => (
-                <PendingActionCard key={`${action.href}-${index}`} {...action} />
+                <div
+                  key={`${action.href}-${index}`}
+                  className="animate-slide-in-right"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                >
+                  <PendingActionCard {...action} />
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
 
+      {/* Activity feed */}
       {activity.length > 0 && (
         <div>
           <h2 className="mb-5 text-sm font-semibold text-[hsl(var(--color-text-1))]">
             Recent activity
           </h2>
-          <div>
+          <div className="rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5">
             {activity.map((item, index) => (
               <ActivityItem
                 key={item.id}

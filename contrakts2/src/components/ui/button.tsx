@@ -7,35 +7,36 @@ const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
     'font-semibold text-sm rounded-md',
-    'transition-all duration-150 ease-out',
+    'transition-all duration-200 ease-out',
     'focus-visible:outline-none focus-visible:ring-2',
     'focus-visible:ring-[hsl(var(--color-accent)/0.5)]',
     'focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--color-bg))]',
     'disabled:pointer-events-none disabled:opacity-40',
-    'active:scale-[0.98]',
+    'active:scale-[0.97]',
   ].join(' '),
   {
     variants: {
       variant: {
         primary: [
           'bg-[hsl(var(--color-accent))] text-white',
-          'hover:brightness-110',
+          'hover:bg-[hsl(var(--color-accent-hover))]',
+          'hover:shadow-[0_0_20px_hsl(var(--color-accent)/0.25)]',
           'shadow-sm',
         ],
         secondary: [
           'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-1))]',
           'border border-[hsl(var(--color-border))]',
           'hover:border-[hsl(var(--color-border-2))]',
-          'hover:bg-[hsl(var(--color-surface-2)/0.8)]',
+          'hover:bg-[hsl(var(--color-surface-3))]',
         ],
         ghost: [
           'bg-transparent text-[hsl(var(--color-text-2))]',
-          'hover:bg-[hsl(var(--color-surface))]',
+          'hover:bg-[hsl(var(--color-surface-2))]',
           'hover:text-[hsl(var(--color-text-1))]',
         ],
         destructive: [
           'bg-[hsl(var(--color-danger))] text-white',
-          'hover:brightness-110',
+          'hover:shadow-[0_0_20px_hsl(var(--color-danger)/0.25)]',
         ],
         outline: [
           'bg-transparent text-[hsl(var(--color-text-1))]',
