@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, CheckCheck } from 'lucide-react'
+import { Bell, CheckCheck, Inbox } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Button } from '@/components/ui/button'
@@ -75,7 +75,8 @@ export default function NotificationsPage() {
         }
       />
 
-      <div className="mb-6 flex items-center gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-1">
+      {/* Enhanced filter tabs */}
+      <div className="mb-6 flex items-center gap-1 overflow-x-auto rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-1.5">
         {FILTER_TABS.map((filter) => {
           const isActive = tab === filter.value
           const count =
@@ -93,20 +94,22 @@ export default function NotificationsPage() {
               type="button"
               onClick={() => setTab(filter.value)}
               className={cn(
-                'flex items-center gap-1.5 whitespace-nowrap rounded-[calc(var(--radius-md)-2px)] px-3 py-1.5 text-sm transition-all duration-150',
+                'flex items-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] px-3.5 py-2 text-sm transition-all duration-200',
                 isActive
                   ? 'bg-[hsl(var(--color-surface-2))] font-medium text-[hsl(var(--color-text-1))] shadow-sm'
-                  : 'text-[hsl(var(--color-text-3))] hover:text-[hsl(var(--color-text-2))]'
+                  : 'text-[hsl(var(--color-text-3))] hover:bg-[hsl(var(--color-surface-2)/0.5)] hover:text-[hsl(var(--color-text-2))]'
               )}
             >
               {filter.label}
               {count > 0 && (
                 <span
                   className={cn(
-                    'min-w-[18px] rounded-full px-1 py-0.5 text-center text-[10px] font-medium',
-                    isActive
-                      ? 'bg-[hsl(var(--color-border-2))] text-[hsl(var(--color-text-2))]'
-                      : 'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-3))]'
+                    'min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-2xs font-semibold',
+                    isActive && filter.value === 'unread'
+                      ? 'bg-[hsl(var(--color-accent)/0.12)] text-[hsl(var(--color-accent))]'
+                      : isActive
+                        ? 'bg-[hsl(var(--color-border-2))] text-[hsl(var(--color-text-2))]'
+                        : 'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-3))]'
                   )}
                 >
                   {count}
@@ -119,18 +122,18 @@ export default function NotificationsPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon={<Bell size={22} />}
-          title="No notifications"
+          icon={tab === 'unread' ? <Inbox size={22} /> : <Bell size={22} />}
+          title={tab === 'unread' ? 'All caught up' : 'No notifications'}
           description={
             tab === 'unread'
-              ? 'You have no unread notifications.'
+              ? 'You have no unread notifications. Nice work!'
               : 'No notifications in this category yet.'
           }
           size="md"
         />
       ) : (
         <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))]">
-          {filtered.map((notification) => {
+          {filtered.map((notification, index) => {
             const config = getNotificationConfig(notification.type)
             const Icon = config.icon
 
@@ -140,17 +143,20 @@ export default function NotificationsPage() {
                 type="button"
                 onClick={() => void handleClick(notification)}
                 className={cn(
-                  'flex w-full items-start gap-4 border-b border-[hsl(var(--color-border))] px-5 py-4 text-left transition-all duration-150 last:border-0',
+                  'group flex w-full items-start gap-4 border-b border-[hsl(var(--color-border))] px-5 py-4 text-left transition-all duration-200 last:border-0',
                   'hover:bg-[hsl(var(--color-surface-2)/0.5)]',
                   !notification.read && [
                     'border-l-2 border-l-[hsl(var(--color-accent))]',
                     'bg-[hsl(var(--color-accent)/0.02)]',
                   ]
                 )}
+                style={{
+                  animationDelay: `${index * 30}ms`,
+                }}
               >
                 <div
                   className={cn(
-                    'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+                    'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110',
                     config.bg
                   )}
                 >
@@ -158,7 +164,12 @@ export default function NotificationsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-4">
-                    <p className="text-sm font-semibold leading-snug text-[hsl(var(--color-text-1))]">
+                    <p
+                      className={cn(
+                        'text-sm leading-snug text-[hsl(var(--color-text-1))]',
+                        !notification.read ? 'font-semibold' : 'font-medium'
+                      )}
+                    >
                       {notification.title}
                     </p>
                     <p className="mt-0.5 shrink-0 text-xs text-[hsl(var(--color-text-3))]">
@@ -170,7 +181,7 @@ export default function NotificationsPage() {
                   </p>
                 </div>
                 {!notification.read && (
-                  <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[hsl(var(--color-accent))]" />
+                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[hsl(var(--color-accent))] shadow-[0_0_8px_hsl(var(--color-accent)/0.4)]" />
                 )}
               </button>
             )

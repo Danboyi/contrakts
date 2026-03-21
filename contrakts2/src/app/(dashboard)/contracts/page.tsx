@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { FileText, Plus } from 'lucide-react'
+import { FileText, Plus, Search } from 'lucide-react'
 import { ContractCard } from '@/components/contracts/contract-card'
 import { PageHeader } from '@/components/shared/page-header'
 import { buttonVariants } from '@/components/ui/button'
@@ -26,6 +26,15 @@ const STATE_FILTERS: { label: string; value: ContractState | 'all' }[] = [
   { label: 'Complete', value: 'complete' },
   { label: 'Draft', value: 'draft' },
 ]
+
+const STATE_DOT_COLORS: Record<string, string> = {
+  active: 'bg-[hsl(var(--color-success))]',
+  pending: 'bg-[hsl(var(--color-accent))]',
+  in_review: 'bg-[hsl(var(--color-warning))]',
+  disputed: 'bg-[hsl(var(--color-danger))]',
+  complete: 'bg-[hsl(var(--color-success))]',
+  draft: 'bg-[hsl(var(--color-text-3))]',
+}
 
 export default async function ContractsPage({
   searchParams,
@@ -94,7 +103,8 @@ export default async function ContractsPage({
         }
       />
 
-      <div className="mb-6 flex items-center gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-1">
+      {/* Filter tabs with enhanced styling */}
+      <div className="mb-6 flex items-center gap-1 overflow-x-auto rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-1.5">
         {STATE_FILTERS.map((filter) => {
           const active =
             (stateFilter === 'all' && filter.value === 'all') ||
@@ -113,19 +123,28 @@ export default async function ContractsPage({
                   : `/contracts?state=${filter.value}`
               }
               className={cn(
-                'flex items-center gap-1.5 whitespace-nowrap rounded-[calc(var(--radius-md)-2px)] px-3 py-1.5 text-sm transition-all duration-150',
+                'flex items-center gap-2 whitespace-nowrap rounded-[var(--radius-md)] px-3.5 py-2 text-sm transition-all duration-200',
                 active
                   ? 'bg-[hsl(var(--color-surface-2))] font-medium text-[hsl(var(--color-text-1))] shadow-sm'
-                  : 'text-[hsl(var(--color-text-3))] hover:text-[hsl(var(--color-text-2))]'
+                  : 'text-[hsl(var(--color-text-3))] hover:bg-[hsl(var(--color-surface-2)/0.5)] hover:text-[hsl(var(--color-text-2))]'
               )}
             >
+              {filter.value !== 'all' && STATE_DOT_COLORS[filter.value] && (
+                <span
+                  className={cn(
+                    'h-1.5 w-1.5 rounded-full',
+                    STATE_DOT_COLORS[filter.value],
+                    active && 'ring-2 ring-current/20'
+                  )}
+                />
+              )}
               {filter.label}
               {count > 0 && (
                 <span
                   className={cn(
-                    'min-w-[18px] rounded-full px-1 py-0.5 text-center text-[10px] font-medium',
+                    'min-w-[20px] rounded-full px-1.5 py-0.5 text-center text-2xs font-semibold',
                     active
-                      ? 'bg-[hsl(var(--color-border-2))] text-[hsl(var(--color-text-2))]'
+                      ? 'bg-[hsl(var(--color-accent)/0.12)] text-[hsl(var(--color-accent))]'
                       : 'bg-[hsl(var(--color-surface-2))] text-[hsl(var(--color-text-3))]'
                   )}
                 >
@@ -162,8 +181,14 @@ export default async function ContractsPage({
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {contracts.map((contract) => (
-            <ContractCard key={contract.id} contract={contract} />
+          {contracts.map((contract, index) => (
+            <div
+              key={contract.id}
+              className="animate-slide-up"
+              style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }}
+            >
+              <ContractCard contract={contract} />
+            </div>
           ))}
         </div>
       )}

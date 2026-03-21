@@ -10,7 +10,6 @@ import {
   Check,
   CheckCircle,
   ChevronDown,
-  ChevronUp,
   Copy,
   Key,
   Mail,
@@ -74,42 +73,56 @@ function preferenceState(
   return preferences[notificationType]?.[channel] ?? true
 }
 
+const SECTION_ICON_COLORS: Record<string, { color: string; bg: string }> = {
+  personal: { color: 'text-[hsl(var(--color-accent))]', bg: 'bg-[hsl(var(--color-accent)/0.1)]' },
+  bank: { color: 'text-[hsl(var(--color-success))]', bg: 'bg-[hsl(var(--color-success)/0.1)]' },
+  crypto: { color: 'text-[hsl(var(--color-warning))]', bg: 'bg-[hsl(var(--color-warning)/0.1)]' },
+  notifications: { color: 'text-[hsl(var(--color-accent-2))]', bg: 'bg-[hsl(var(--color-accent-2)/0.1)]' },
+  api: { color: 'text-[hsl(var(--color-text-2))]', bg: 'bg-[hsl(var(--color-surface-2))]' },
+  danger: { color: 'text-[hsl(var(--color-danger))]', bg: 'bg-[hsl(var(--color-danger)/0.08)]' },
+}
+
 function SettingsSection({
   icon: Icon,
   title,
   description,
   children,
   defaultOpen = true,
+  sectionKey = 'personal',
 }: {
   icon: React.ElementType
   title: string
   description: string
   children: React.ReactNode
   defaultOpen?: boolean
+  sectionKey?: string
 }) {
   const [open, setOpen] = useState(defaultOpen)
+  const iconStyle = SECTION_ICON_COLORS[sectionKey] ?? SECTION_ICON_COLORS.personal
 
   return (
     <div
       className={cn(
         'mb-4 overflow-hidden rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))]',
-        'bg-[hsl(var(--color-surface))]'
+        'bg-[hsl(var(--color-surface))] transition-shadow duration-200',
+        open && 'shadow-card'
       )}
     >
       <button
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          'flex w-full items-center gap-4 p-5 transition-colors duration-150',
+          'flex w-full items-center gap-4 p-5 transition-colors duration-200',
           'hover:bg-[hsl(var(--color-surface-2)/0.5)]'
         )}
       >
         <div
           className={cn(
-            'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)]',
-            'bg-[hsl(var(--color-surface-2))]'
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] transition-transform duration-200',
+            iconStyle.bg,
+            open && 'scale-110'
           )}
         >
-          <Icon size={16} className="text-[hsl(var(--color-text-2))]" />
+          <Icon size={16} className={iconStyle.color} />
         </div>
         <div className="min-w-0 flex-1 text-left">
           <p className="text-sm font-semibold text-[hsl(var(--color-text-1))]">{title}</p>
@@ -117,11 +130,13 @@ function SettingsSection({
             {description}
           </p>
         </div>
-        {open ? (
-          <ChevronUp size={15} className="text-[hsl(var(--color-text-3))]" />
-        ) : (
-          <ChevronDown size={15} className="text-[hsl(var(--color-text-3))]" />
-        )}
+        <ChevronDown
+          size={15}
+          className={cn(
+            'text-[hsl(var(--color-text-3))] transition-transform duration-300',
+            open && 'rotate-180'
+          )}
+        />
       </button>
 
       {open && (
@@ -218,12 +233,12 @@ function BankAccountForm({ profile }: { profile: User }) {
       {hasBankSetup && (
         <div
           className={cn(
-            'mb-4 flex items-center gap-2 rounded-[var(--radius-md)] border border-[hsl(var(--color-success)/0.2)]',
-            'bg-[hsl(var(--color-success)/0.08)] px-3 py-2'
+            'mb-4 flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[hsl(var(--color-success)/0.2)]',
+            'bg-[hsl(var(--color-success)/0.08)] px-3 py-2.5'
           )}
         >
-          <CheckCircle size={13} className="text-[hsl(var(--color-success))]" />
-          <p className="text-xs text-[hsl(var(--color-success))]">
+          <CheckCircle size={14} className="text-[hsl(var(--color-success))]" />
+          <p className="text-xs font-medium text-[hsl(var(--color-success))]">
             Bank account verified - {profile.bank_name} ...
             {profile.bank_account_number?.slice(-4)}
             {profile.preferred_payout === 'fiat' && ' - Current payout method'}
@@ -246,7 +261,7 @@ function BankAccountForm({ profile }: { profile: User }) {
             className={cn(
               'h-[44px] w-full rounded-[var(--radius-md)] border border-[hsl(var(--color-border))]',
               'bg-[hsl(var(--color-surface-2))] px-4 text-sm text-[hsl(var(--color-text-1))]',
-              'outline-none transition-all duration-150 focus:border-[hsl(var(--color-accent))]',
+              'outline-none transition-all duration-200 focus:border-[hsl(var(--color-accent))]',
               'focus:shadow-[0_0_0_3px_hsl(var(--color-accent)/0.12)]'
             )}
           >
@@ -308,12 +323,12 @@ function WalletForm({ profile }: { profile: User }) {
       {profile.wallet_address && (
         <div
           className={cn(
-            'mb-4 flex items-center gap-2 rounded-[var(--radius-md)] border border-[hsl(var(--color-success)/0.2)]',
-            'bg-[hsl(var(--color-success)/0.08)] px-3 py-2'
+            'mb-4 flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[hsl(var(--color-success)/0.2)]',
+            'bg-[hsl(var(--color-success)/0.08)] px-3 py-2.5'
           )}
         >
-          <CheckCircle size={13} className="text-[hsl(var(--color-success))]" />
-          <p className="text-xs text-[hsl(var(--color-success))]">
+          <CheckCircle size={14} className="text-[hsl(var(--color-success))]" />
+          <p className="text-xs font-medium text-[hsl(var(--color-success))]">
             Wallet saved - {profile.wallet_address.slice(0, 6)}...
             {profile.wallet_address.slice(-4)}
             {profile.preferred_payout === 'crypto' && ' - Current payout method'}
@@ -369,13 +384,13 @@ function PreferenceSwitch({
       <span className="text-xs text-[hsl(var(--color-text-3))]">{label}</span>
       <span
         className={cn(
-          'relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-150',
-          enabled ? 'bg-[hsl(var(--color-accent))]' : 'bg-[hsl(var(--color-border))]'
+          'relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200',
+          enabled ? 'bg-[hsl(var(--color-accent))] shadow-[0_0_8px_hsl(var(--color-accent)/0.3)]' : 'bg-[hsl(var(--color-border))]'
         )}
       >
         <span
           className={cn(
-            'absolute h-4 w-4 rounded-full bg-white transition-transform duration-150',
+            'absolute h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200',
             enabled ? 'translate-x-4' : 'translate-x-0.5'
           )}
         />
@@ -475,7 +490,8 @@ function NotificationPreferencesSection({
           key={notificationType}
           className={cn(
             'rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))]',
-            'bg-[hsl(var(--color-surface-2))] p-4'
+            'bg-[hsl(var(--color-surface-2))] p-4 transition-all duration-200',
+            'hover:border-[hsl(var(--color-border-2))]'
           )}
         >
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -505,7 +521,7 @@ function NotificationPreferencesSection({
                 />
               </div>
               {savingKey?.startsWith(`${notificationType}:`) && (
-                <span className="text-[11px] text-[hsl(var(--color-text-3))]">
+                <span className="text-[11px] text-[hsl(var(--color-accent))]">
                   Saving...
                 </span>
               )}
@@ -631,7 +647,7 @@ function ApiKeysSection({ profile }: { profile: User }) {
             }}
             className={cn(
               'shrink-0 rounded-[var(--radius-sm)] p-2 text-[hsl(var(--color-success))]',
-              'transition-colors duration-150 hover:bg-[hsl(var(--color-success)/0.1)]'
+              'transition-all duration-200 hover:bg-[hsl(var(--color-success)/0.1)] hover:scale-110'
             )}
           >
             <Copy size={14} />
@@ -645,8 +661,9 @@ function ApiKeysSection({ profile }: { profile: User }) {
             <div
               key={key.id}
               className={cn(
-                'flex items-center gap-4 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))]',
-                'bg-[hsl(var(--color-surface-2))] p-3'
+                'group flex items-center gap-4 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))]',
+                'bg-[hsl(var(--color-surface-2))] p-3.5 transition-all duration-200',
+                'hover:border-[hsl(var(--color-border-2))]'
               )}
             >
               <div className="min-w-0 flex-1">
@@ -684,7 +701,7 @@ function ApiKeysSection({ profile }: { profile: User }) {
                 onClick={() => handleRevoke(key.id)}
                 className={cn(
                   'shrink-0 rounded-[var(--radius-sm)] p-1.5 text-[hsl(var(--color-text-3))]',
-                  'transition-all duration-150 hover:bg-[hsl(var(--color-danger)/0.08)] hover:text-[hsl(var(--color-danger))]'
+                  'transition-all duration-200 hover:bg-[hsl(var(--color-danger)/0.08)] hover:text-[hsl(var(--color-danger))]'
                 )}
                 title="Revoke key"
               >
@@ -698,7 +715,7 @@ function ApiKeysSection({ profile }: { profile: User }) {
       {showNew ? (
         <div
           className={cn(
-            'rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))]',
+            'rounded-[var(--radius-lg)] border border-[hsl(var(--color-accent)/0.2)]',
             'bg-[hsl(var(--color-surface-2))] p-4'
           )}
         >
@@ -719,10 +736,10 @@ function ApiKeysSection({ profile }: { profile: User }) {
                   type="button"
                   onClick={() => toggleScope(scope)}
                   className={cn(
-                    'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-150',
+                    'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-200',
                     scopes.includes(scope)
-                      ? 'border-[hsl(var(--color-accent))] bg-[hsl(var(--color-accent))]'
-                      : 'border-[hsl(var(--color-border-2))] bg-transparent'
+                      ? 'border-[hsl(var(--color-accent))] bg-[hsl(var(--color-accent))] shadow-[0_0_6px_hsl(var(--color-accent)/0.3)]'
+                      : 'border-[hsl(var(--color-border-2))] bg-transparent hover:border-[hsl(var(--color-accent)/0.5)]'
                   )}
                 >
                   {scopes.includes(scope) && (
@@ -784,6 +801,7 @@ export function SettingsClient({
         icon={UserRound}
         title="Personal info"
         description="Update the name and phone number shown on your profile"
+        sectionKey="personal"
       >
         <PersonalInfoForm profile={profile} />
       </SettingsSection>
@@ -793,6 +811,7 @@ export function SettingsClient({
         title="Bank account"
         description="Receive fiat milestone payments directly to your bank"
         defaultOpen={!profile.paystack_recipient_code}
+        sectionKey="bank"
       >
         <BankAccountForm profile={profile} />
       </SettingsSection>
@@ -802,6 +821,7 @@ export function SettingsClient({
         title="Crypto wallet"
         description="Receive USDC payouts for crypto-funded contracts"
         defaultOpen={false}
+        sectionKey="crypto"
       >
         <WalletForm profile={profile} />
       </SettingsSection>
@@ -811,6 +831,7 @@ export function SettingsClient({
         title="Notification preferences"
         description="Choose which events trigger in-app and email notifications"
         defaultOpen={false}
+        sectionKey="notifications"
       >
         <NotificationPreferencesSection
           userId={profile.id}
@@ -823,6 +844,7 @@ export function SettingsClient({
         title="API keys"
         description="Authenticate API requests and integrate Contrakts into your own systems"
         defaultOpen={false}
+        sectionKey="api"
       >
         <ApiKeysSection profile={profile} />
       </SettingsSection>
@@ -832,6 +854,7 @@ export function SettingsClient({
         title="Danger zone"
         description="Irreversible account actions"
         defaultOpen={false}
+        sectionKey="danger"
       >
         <div
           className={cn(

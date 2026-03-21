@@ -81,6 +81,17 @@ function normalizeActivityItem(
   }
 }
 
+const STATE_HEADER_ACCENT: Record<string, string> = {
+  active: 'border-l-[hsl(var(--color-success)/0.5)]',
+  pending: 'border-l-[hsl(var(--color-accent)/0.5)]',
+  funded: 'border-l-[hsl(var(--color-success)/0.5)]',
+  in_review: 'border-l-[hsl(var(--color-warning)/0.5)]',
+  disputed: 'border-l-[hsl(var(--color-danger)/0.5)]',
+  complete: 'border-l-[hsl(var(--color-success)/0.5)]',
+  voided: 'border-l-[hsl(var(--color-text-3)/0.3)]',
+  draft: 'border-l-[hsl(var(--color-text-3)/0.3)]',
+}
+
 export function ContractDetailClient({
   initialContract,
   currentUserId,
@@ -299,16 +310,28 @@ export function ContractDetailClient({
 
   return (
     <div className="mx-auto max-w-[800px]">
-      <div className="mb-6">
+      {/* Header section with state-colored left accent */}
+      <div
+        className={cn(
+          'mb-6 rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] border-l-[3px] bg-[hsl(var(--color-surface))] p-6',
+          STATE_HEADER_ACCENT[contract.state]
+        )}
+      >
         <Link
           href="/contracts"
           className={cn(
-            'mb-4 inline-flex items-center gap-1.5 text-xs',
-            'text-[hsl(var(--color-text-3))] transition-colors duration-150',
-            'hover:text-[hsl(var(--color-text-2))]'
+            'group mb-4 inline-flex items-center gap-1.5 text-xs',
+            'text-[hsl(var(--color-text-3))] transition-colors duration-200',
+            'hover:text-[hsl(var(--color-accent))]'
           )}
         >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            className="transition-transform duration-200 group-hover:-translate-x-0.5"
+          >
             <path
               d="M8 2L4 6l4 4"
               stroke="currentColor"
@@ -322,10 +345,10 @@ export function ContractDetailClient({
 
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="mb-1.5 font-mono text-[11px] tracking-wide text-[hsl(var(--color-text-3))]">
+            <p className="mb-1.5 font-mono text-[11px] tracking-wider text-[hsl(var(--color-text-3))] uppercase">
               {contract.ref_code}
             </p>
-            <h1 className="text-2xl font-semibold leading-tight text-[hsl(var(--color-text-1))]">
+            <h1 className="text-2xl font-bold leading-tight text-[hsl(var(--color-text-1))]">
               {contract.title}
             </h1>
             {contract.description && (
@@ -339,9 +362,14 @@ export function ContractDetailClient({
                 Created {formatDate(contract.created_at)}
               </span>
               {contract.end_date && (
-                <span className="text-xs text-[hsl(var(--color-text-3))]">
-                  Due {formatDate(contract.end_date)}
-                </span>
+                <>
+                  <span className="text-2xs text-[hsl(var(--color-border-2))]">
+                    &middot;
+                  </span>
+                  <span className="text-xs text-[hsl(var(--color-text-3))]">
+                    Due {formatDate(contract.end_date)}
+                  </span>
+                </>
               )}
             </div>
           </div>
@@ -357,7 +385,7 @@ export function ContractDetailClient({
             </Button>
             <DropdownMenu>
               <DropdownTrigger asChild>
-                <Button variant="secondary" size="icon">
+                <Button variant="ghost" size="icon">
                   <MoreHorizontal size={15} />
                 </Button>
               </DropdownTrigger>
@@ -424,6 +452,7 @@ export function ContractDetailClient({
         />
       )}
 
+      {/* Parties */}
       <div className="mb-6 flex flex-col gap-4 md:flex-row">
         <PartyCard
           role="initiator"
@@ -440,6 +469,7 @@ export function ContractDetailClient({
         />
       </div>
 
+      {/* Escrow */}
       <div className="mb-6">
         <EscrowBar
           milestones={milestones}
@@ -448,6 +478,7 @@ export function ContractDetailClient({
         />
       </div>
 
+      {/* Milestones */}
       <div className="mb-6">
         <MilestoneTracker
           milestones={milestones}
@@ -461,21 +492,27 @@ export function ContractDetailClient({
         />
       </div>
 
-      <div className="mb-6 overflow-hidden rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))]">
+      {/* Terms accordion with enhanced styling */}
+      <div className="mb-6 overflow-hidden rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] transition-shadow duration-200 hover:shadow-card">
         <button
           type="button"
           onClick={() => setTermsOpen((value) => !value)}
           className={cn(
             'flex w-full items-center justify-between px-5 py-4 text-sm font-semibold',
-            'text-[hsl(var(--color-text-1))] transition-colors duration-150',
+            'text-[hsl(var(--color-text-1))] transition-colors duration-200',
             'hover:bg-[hsl(var(--color-surface-2)/0.5)]'
           )}
         >
-          Contract terms
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-[hsl(var(--color-surface-2))]">
+              <ExternalLink size={13} className="text-[hsl(var(--color-text-2))]" />
+            </div>
+            Contract terms
+          </div>
           <ChevronDown
             size={15}
             className={cn(
-              'text-[hsl(var(--color-text-3))] transition-transform duration-200',
+              'text-[hsl(var(--color-text-3))] transition-transform duration-300',
               termsOpen && 'rotate-180'
             )}
           />
@@ -490,12 +527,14 @@ export function ContractDetailClient({
               <div className="mt-4 border-t border-[hsl(var(--color-border))] pt-4">
                 <div className="flex flex-wrap items-center gap-4 text-xs text-[hsl(var(--color-text-3))]">
                   {contract.signed_initiator_at && (
-                    <span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-1 w-1 rounded-full bg-[hsl(var(--color-success))]" />
                       Initiator signed {formatDateTime(contract.signed_initiator_at)}
                     </span>
                   )}
                   {contract.signed_counterparty_at && (
-                    <span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-1 w-1 rounded-full bg-[hsl(var(--color-success))]" />
                       Counterparty signed{' '}
                       {formatDateTime(contract.signed_counterparty_at)}
                     </span>
@@ -507,15 +546,20 @@ export function ContractDetailClient({
         )}
       </div>
 
-      <div className="mb-6 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5">
-        <h2 className="mb-4 text-sm font-semibold text-[hsl(var(--color-text-1))]">
+      {/* Contract details with enhanced grid */}
+      <div className="mb-6 rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5 transition-shadow duration-200 hover:shadow-card">
+        <h2 className="mb-4 flex items-center gap-2.5 text-sm font-semibold text-[hsl(var(--color-text-1))]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-[hsl(var(--color-surface-2))]">
+            <DollarSign size={13} className="text-[hsl(var(--color-text-2))]" />
+          </div>
           Contract details
         </h2>
-        <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[
             {
               label: 'Total value',
               value: formatCurrency(contract.total_value, contract.currency),
+              highlight: true,
             },
             {
               label: 'Platform fee',
@@ -541,12 +585,23 @@ export function ContractDetailClient({
               label: 'Funded',
               value: contract.funded_at ? formatDateTime(contract.funded_at) : '-',
             },
-          ].map(({ label, value }) => (
-            <div key={label}>
-              <p className="mb-1 text-[11px] uppercase tracking-wide text-[hsl(var(--color-text-3))]">
+          ].map(({ label, value, highlight }) => (
+            <div
+              key={label}
+              className={cn(
+                'rounded-[var(--radius-md)] border border-[hsl(var(--color-border)/0.5)] bg-[hsl(var(--color-surface-2)/0.3)] p-3',
+                highlight && 'border-[hsl(var(--color-accent)/0.2)] bg-[hsl(var(--color-accent)/0.03)]'
+              )}
+            >
+              <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-[hsl(var(--color-text-3))]">
                 {label}
               </p>
-              <p className="text-sm font-medium text-[hsl(var(--color-text-1))]">
+              <p
+                className={cn(
+                  'text-sm font-medium text-[hsl(var(--color-text-1))]',
+                  highlight && 'font-semibold'
+                )}
+              >
                 {value}
               </p>
             </div>
@@ -554,8 +609,10 @@ export function ContractDetailClient({
         </div>
       </div>
 
+      {/* Activity Feed */}
       <ActivityFeed contractId={contract.id} />
 
+      {/* Share modal */}
       <Modal
         open={shareModal}
         onOpenChange={setShareModal}
@@ -563,7 +620,7 @@ export function ContractDetailClient({
         description="Send this link to the counterparty to accept the contract."
         size="sm"
       >
-        <div className="mt-2 flex items-center gap-2 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-3">
+        <div className="mt-2 flex items-center gap-2 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] p-3">
           <p className="flex-1 truncate font-mono text-xs text-[hsl(var(--color-text-2))]">
             {inviteLink || 'No invite link available'}
           </p>
@@ -572,8 +629,8 @@ export function ContractDetailClient({
             onClick={copyInviteLink}
             className={cn(
               'shrink-0 rounded-[var(--radius-sm)] p-1.5 text-[hsl(var(--color-text-3))]',
-              'transition-all duration-150',
-              'hover:bg-[hsl(var(--color-surface-2))] hover:text-[hsl(var(--color-text-1))]'
+              'transition-all duration-200',
+              'hover:bg-[hsl(var(--color-surface-3))] hover:text-[hsl(var(--color-accent))]'
             )}
           >
             <Copy size={14} />
@@ -584,6 +641,7 @@ export function ContractDetailClient({
         </ModalFooter>
       </Modal>
 
+      {/* Void modal */}
       <Modal
         open={voidModal}
         onOpenChange={setVoidModal}
@@ -666,7 +724,7 @@ function ActivityFeed({ contractId }: { contractId: string }) {
   }
 
   return (
-    <div>
+    <div className="rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-5 transition-shadow duration-200 hover:shadow-card">
       <h2 className="mb-5 text-sm font-semibold text-[hsl(var(--color-text-1))]">
         Activity
       </h2>
