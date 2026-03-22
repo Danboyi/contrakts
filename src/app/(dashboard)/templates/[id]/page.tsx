@@ -69,6 +69,7 @@ export default async function TemplateDetailPage({
     end_date: '',
     terms: template.terms ?? '',
     counterparty_email: '',
+    initiator_role: 'service_receiver' as const,
     milestones: (template.milestones ?? []).map((milestone) => ({
       id: milestone.id,
       title: milestone.title,

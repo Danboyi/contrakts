@@ -107,7 +107,7 @@ export async function submitContractReview(
     submitted_by: user.id,
     status: 'pending_review',
     changes_summary: data.changes_summary,
-    milestone_changes: data.milestones as unknown as Record<string, unknown>,
+    milestone_changes: data.milestones as unknown as import('@/types/supabase').Json,
     terms_changes: data.terms ?? null,
   })
 
@@ -157,8 +157,8 @@ export async function submitContractReview(
   // Notify the other party
   const otherPartyId = isInitiator ? contract.counterparty_id : contract.initiator_id
   const profile = isInitiator
-    ? (contract.initiator as { full_name: string } | null)
-    : (contract.counterparty as { full_name: string } | null)
+    ? (contract.initiator as unknown as { full_name: string } | null)
+    : (contract.counterparty as unknown as { full_name: string } | null)
 
   if (otherPartyId) {
     await insertNotifications({
@@ -244,8 +244,8 @@ export async function acceptContractTerms(
 
   const otherPartyId = isInitiator ? contract.counterparty_id : contract.initiator_id
   const profile = isInitiator
-    ? (contract.initiator as { full_name: string } | null)
-    : (contract.counterparty as { full_name: string } | null)
+    ? (contract.initiator as unknown as { full_name: string } | null)
+    : (contract.counterparty as unknown as { full_name: string } | null)
 
   if (otherPartyId) {
     const isServiceReceiver =
