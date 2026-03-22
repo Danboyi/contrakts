@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FileText, Home, Settings, User } from 'lucide-react'
+import { Breadcrumbs } from './breadcrumbs'
+import { CommandPalette } from './command-palette'
 import { Header } from './header'
+import { OnboardingWizard } from './onboarding-wizard'
 import { PageTransition } from './page-transition'
-import { Sidebar } from './sidebar'
+import { Sidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from './sidebar'
 import { cn } from '@/lib/utils/cn'
 import type { User as UserProfile } from '@/types'
 
@@ -26,17 +29,33 @@ export function DashboardShell({
 }) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem('contrakts_sidebar_collapsed') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const handleCollapsedChange = useCallback((collapsed: boolean) => {
+    setSidebarCollapsed(collapsed)
+  }, [])
+
+  const sidebarWidth = sidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
 
   return (
     <div className="flex min-h-screen bg-[hsl(var(--color-bg))]">
       <aside
+        style={{ width: sidebarWidth }}
         className={cn(
-          'fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col md:flex',
+          'fixed inset-y-0 left-0 z-40 hidden flex-col md:flex',
           'border-r border-[hsl(var(--color-border))]',
-          'bg-[hsl(var(--color-surface))]'
+          'bg-[hsl(var(--color-surface))]',
+          'transition-[width] duration-[250ms] ease-out'
         )}
       >
-        <Sidebar profile={profile} />
+        <Sidebar profile={profile} onCollapsedChange={handleCollapsedChange} />
       </aside>
 
       {sidebarOpen && (
@@ -56,13 +75,18 @@ export function DashboardShell({
         <Sidebar profile={profile} onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      <main className="min-h-screen flex-1 md:ml-[240px]">
+      <main className="min-h-screen flex-1 transition-[margin-left] duration-[250ms] ease-out md:ml-[var(--sidebar-w)]"
+        style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}
+      >
         <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col px-6 pb-24 md:px-8 md:pb-8">
           <Header
             profile={profile}
             onMenuClick={() => setSidebarOpen(true)}
           />
-          <div className="flex-1 py-6 md:py-8">
+          <div className="hidden py-3 md:block">
+            <Breadcrumbs />
+          </div>
+          <div className="flex-1 py-4 md:py-6">
             <PageTransition>{children}</PageTransition>
           </div>
         </div>
@@ -94,6 +118,9 @@ export function DashboardShell({
           )
         })}
       </nav>
+
+      <CommandPalette />
+      <OnboardingWizard />
     </div>
   )
 }

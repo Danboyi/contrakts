@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dropdown'
 import { TrustScore } from '@/components/ui/trust-score'
 import { NotificationBell } from './notification-bell'
+import ThemeToggle from './theme-toggle'
 import type { User } from '@/types'
 
 function getSectionTitle(pathname: string) {
@@ -145,6 +146,7 @@ export function Header({
           Contrakts
         </span>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <NotificationBell />
           <UserMenu profile={activeProfile} />
         </div>
@@ -164,6 +166,7 @@ export function Header({
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <NotificationBell />
           <UserMenu profile={activeProfile} />
         </div>
