@@ -32,6 +32,7 @@ const MilestoneSchema = z.object({
 })
 
 const ContractSchema = z.object({
+  initiator_role: z.enum(['vendor', 'service_receiver']).default('service_receiver'),
   title: z.string().min(3, 'Title must be at least 3 characters'),
   description: z.string().optional(),
   industry: z.string().min(1, 'Select an industry'),
@@ -140,6 +141,7 @@ export async function createContract(
       invite_token: inviteToken,
       industry: data.industry,
       state: 'draft',
+      initiator_role: data.initiator_role ?? 'service_receiver',
       currency: data.currency,
       total_value: totalValue,
       platform_fee_pct: PLATFORM_FEE_PCT,
@@ -147,7 +149,6 @@ export async function createContract(
       start_date: data.start_date ?? null,
       end_date: data.end_date ?? null,
       terms: data.terms,
-      signed_initiator_at: new Date().toISOString(),
     })
     .select('id')
     .single()
@@ -182,15 +183,18 @@ export async function createContract(
     payload: { ref_code: refCode, title: data.title },
   })
 
-  await supabase.from('contracts').update({ state: 'pending' }).eq('id', contract.id)
+  await supabase.from('contracts').update({ state: 'negotiating' }).eq('id', contract.id)
+
+  const isVendorInitiator = data.initiator_role === 'vendor'
+  const initiatorRoleLabel = isVendorInitiator ? 'vendor' : 'client'
 
   if (counterpartyId) {
     await insertNotifications({
       user_id: counterpartyId,
       contract_id: contract.id,
       type: 'contract_invite',
-      title: 'New contract invite',
-      body: `${profile?.full_name ?? 'A client'} invited you to review "${data.title}".`,
+      title: 'New contract proposal',
+      body: `${profile?.full_name ?? `A ${initiatorRoleLabel}`} sent you a contract proposal for "${data.title}". Review the terms and milestones, then accept or negotiate.`,
     })
   }
 
@@ -259,7 +263,7 @@ export async function signContract(
     return { error: 'Contract not found.' }
   }
 
-  if (contract.state !== 'pending') {
+  if (contract.state !== 'pending' && contract.state !== 'negotiating') {
     return { error: 'This contract is not awaiting signatures.' }
   }
 
@@ -337,8 +341,8 @@ export async function voidContract(
     return { error: 'You are not a party to this contract.' }
   }
 
-  if (!['draft', 'pending'].includes(contract.state)) {
-    return { error: 'Only draft or pending contracts can be voided.' }
+  if (!['draft', 'pending', 'negotiating'].includes(contract.state)) {
+    return { error: 'Only draft, pending, or negotiating contracts can be voided.' }
   }
 
   await supabase

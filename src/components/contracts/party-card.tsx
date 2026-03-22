@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils/cn'
 
 interface PartyCardProps {
   role: 'initiator' | 'counterparty'
+  roleLabel?: string
   user: {
     full_name: string
     email: string
@@ -20,6 +21,7 @@ interface PartyCardProps {
 
 export function PartyCard({
   role,
+  roleLabel,
   user,
   signedAt,
   isYou,
@@ -31,7 +33,7 @@ export function PartyCard({
     return (
       <div className="flex-1 rounded-[var(--radius-lg)] border border-dashed border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-4">
         <p className="mb-3 text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--color-text-3))]">
-          {role === 'initiator' ? 'Initiator' : 'Counterparty'}
+          {roleLabel ?? (role === 'initiator' ? 'Initiator' : 'Counterparty')}
         </p>
         <p className="text-sm italic text-[hsl(var(--color-text-3))]">
           {placeholder ?? 'Invite pending'}
@@ -56,7 +58,7 @@ export function PartyCard({
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <p className="text-[10px] font-medium uppercase tracking-wide text-[hsl(var(--color-text-3))]">
-          {role === 'initiator' ? 'Initiator' : 'Counterparty'}
+          {roleLabel ?? (role === 'initiator' ? 'Initiator' : 'Counterparty')}
           {isYou && (
             <span className="ml-2 text-[hsl(var(--color-accent))]">- You</span>
           )}

@@ -1,12 +1,13 @@
 import { notFound, redirect } from 'next/navigation'
 import { ContractDetailClient } from './contract-detail-client'
 import { createClient } from '@/lib/supabase/server'
-import type { Contract, Milestone } from '@/types'
+import type { Contract, Milestone, NegotiationRound } from '@/types'
 
 type DetailContract = Contract & {
   initiator: NonNullable<Contract['initiator']> | null
   counterparty: NonNullable<Contract['counterparty']> | null
   milestones: Milestone[]
+  negotiations: NegotiationRound[]
 }
 
 export async function generateMetadata({
@@ -50,6 +51,10 @@ export default async function ContractDetailPage({
       milestones(
         *,
         deliverables(*)
+      ),
+      negotiations:contract_negotiations(
+        *,
+        submitted_by_user:users!submitted_by(full_name, email, avatar_url)
       )
     `
     )
@@ -74,9 +79,18 @@ export default async function ContractDetailPage({
       a.order_index - b.order_index
   )
 
+  const sortedNegotiations = [...(contract.negotiations ?? [])].sort(
+    (a: { round_number: number }, b: { round_number: number }) =>
+      a.round_number - b.round_number
+  )
+
   return (
     <ContractDetailClient
-      initialContract={{ ...contract, milestones: sortedMilestones }}
+      initialContract={{
+        ...contract,
+        milestones: sortedMilestones,
+        negotiations: sortedNegotiations,
+      }}
       currentUserId={user.id}
     />
   )

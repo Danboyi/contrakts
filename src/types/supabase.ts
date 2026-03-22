@@ -96,6 +96,45 @@ export interface Database {
         }
         Relationships: []
       }
+      contract_negotiations: {
+        Row: {
+          id: string
+          contract_id: string
+          round_number: number
+          submitted_by: string
+          status: string
+          changes_summary: string | null
+          milestone_changes: Json | null
+          terms_changes: string | null
+          created_at: string
+          responded_at: string | null
+        }
+        Insert: {
+          id?: string
+          contract_id: string
+          round_number: number
+          submitted_by: string
+          status?: string
+          changes_summary?: string | null
+          milestone_changes?: Json | null
+          terms_changes?: string | null
+          created_at?: string
+          responded_at?: string | null
+        }
+        Update: {
+          id?: string
+          contract_id?: string
+          round_number?: number
+          submitted_by?: string
+          status?: string
+          changes_summary?: string | null
+          milestone_changes?: Json | null
+          terms_changes?: string | null
+          created_at?: string
+          responded_at?: string | null
+        }
+        Relationships: []
+      }
       contracts: {
         Row: {
           completed_at: string | null
@@ -108,6 +147,7 @@ export interface Database {
           id: string
           industry: string
           initiator_id: string
+          initiator_role: string
           invite_token: string | null
           payment_method: string
           platform_fee: number | null
@@ -132,6 +172,7 @@ export interface Database {
           id?: string
           industry?: string
           initiator_id: string
+          initiator_role?: string
           invite_token?: string | null
           payment_method?: string
           platform_fee?: number | null
@@ -156,6 +197,7 @@ export interface Database {
           id?: string
           industry?: string
           initiator_id?: string
+          initiator_role?: string
           invite_token?: string | null
           payment_method?: string
           platform_fee?: number | null

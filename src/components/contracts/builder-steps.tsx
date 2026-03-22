@@ -368,11 +368,16 @@ export function StepCounterparty({
   data,
   errors,
   update,
+  initiatorRole,
 }: {
   data: ContractFormData
   errors: Partial<Record<keyof ContractFormData, string>>
   update: (field: keyof ContractFormData, value: unknown) => void
+  initiatorRole?: 'vendor' | 'service_receiver'
 }) {
+  const isVendor = initiatorRole === 'vendor'
+  const otherPartyLabel = isVendor ? 'client' : 'vendor'
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-start gap-3 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] p-4">
@@ -381,24 +386,25 @@ export function StepCounterparty({
         </div>
         <div>
           <p className="mb-1 text-sm font-medium text-[hsl(var(--color-text-1))]">
-            Invite by email
+            Invite your {otherPartyLabel} by email
           </p>
           <p className="text-xs leading-relaxed text-[hsl(var(--color-text-3))]">
-            We&apos;ll send them a secure link to review and sign the contract.
+            We&apos;ll send them a secure link to review your contract terms.
+            They can negotiate milestones and terms before accepting.
             If they don&apos;t have a Contrakts account, they&apos;ll be prompted
-            to create one. It takes under a minute.
+            to create one.
           </p>
         </div>
       </div>
 
       <Input
-        label="Counterparty email address"
+        label={`${isVendor ? 'Client' : 'Vendor'} email address`}
         type="email"
         placeholder="their@email.com"
         value={data.counterparty_email}
         onChange={(event) => update('counterparty_email', event.target.value)}
         error={errors.counterparty_email}
-        hint="This person will receive the contract invite and must sign before escrow can be funded."
+        hint={`Your ${otherPartyLabel} will review the contract, negotiate terms if needed, then accept and ${isVendor ? 'fund' : 'agree to'} the project.`}
         autoFocus
       />
     </div>
@@ -424,6 +430,13 @@ export function StepReview({
   return (
     <div className="flex flex-col gap-5">
       {[
+        {
+          label: 'Your role',
+          value:
+            data.initiator_role === 'vendor'
+              ? 'Vendor (Service Provider)'
+              : 'Service Receiver (Client)',
+        },
         { label: 'Title', value: data.title },
         { label: 'Industry', value: industryLabel },
         { label: 'Currency', value: data.currency },

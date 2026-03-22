@@ -3,6 +3,7 @@ import type { User } from './user'
 export type ContractState =
   | 'draft'
   | 'pending'
+  | 'negotiating'
   | 'funded'
   | 'active'
   | 'in_review'
@@ -30,6 +31,30 @@ export type Industry =
 
 export type ContractPaymentMethod = 'fiat' | 'crypto'
 
+/** The role the initiator chose when creating the contract */
+export type InitiatorRole = 'vendor' | 'service_receiver'
+
+/** Negotiation round status */
+export type NegotiationStatus =
+  | 'pending_review'
+  | 'reviewed'
+  | 'countered'
+  | 'accepted'
+
+export interface NegotiationRound {
+  id: string
+  contract_id: string
+  round_number: number
+  submitted_by: string
+  status: NegotiationStatus
+  changes_summary: string | null
+  milestone_changes: Record<string, unknown> | null
+  terms_changes: string | null
+  created_at: string
+  responded_at: string | null
+  submitted_by_user?: User
+}
+
 export interface Contract {
   id: string
   ref_code: string
@@ -40,6 +65,7 @@ export interface Contract {
   invite_token: string | null
   industry: Industry
   state: ContractState
+  initiator_role: InitiatorRole
   payment_method: ContractPaymentMethod
   currency: string
   total_value: number
@@ -56,6 +82,7 @@ export interface Contract {
   initiator?: User
   counterparty?: User
   milestones?: Milestone[]
+  negotiations?: NegotiationRound[]
 }
 
 export interface Milestone {

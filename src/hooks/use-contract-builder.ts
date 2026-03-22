@@ -11,7 +11,10 @@ export interface MilestoneInput {
   deadline: string
 }
 
+export type InitiatorRoleChoice = 'vendor' | 'service_receiver'
+
 export interface ContractFormData {
+  initiator_role: InitiatorRoleChoice
   title: string
   description: string
   industry: string
@@ -40,6 +43,7 @@ const defaultMilestone = (): MilestoneInput => ({
 })
 
 const createInitialData = (): ContractFormData => ({
+  initiator_role: 'service_receiver',
   title: '',
   description: '',
   industry: '',
@@ -89,6 +93,10 @@ function normalizeDraft(value: unknown): ContractFormData {
     : []
 
   return {
+    initiator_role:
+      (draft as Record<string, unknown>).initiator_role === 'vendor'
+        ? 'vendor'
+        : 'service_receiver',
     title: typeof draft.title === 'string' ? draft.title : '',
     description: typeof draft.description === 'string' ? draft.description : '',
     industry: typeof draft.industry === 'string' ? draft.industry : '',
@@ -106,7 +114,7 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
   const requireMilestoneAmounts = options.requireMilestoneAmounts ?? true
   const requireCounterparty = options.requireCounterparty ?? true
   const storageKey = options.storageKey ?? STORAGE_KEY
-  const maxStep = requireCounterparty ? 4 : 3
+  const maxStep = requireCounterparty ? 5 : 4
   const [step, setStep] = useState(0)
   const [data, setData] = useState<ContractFormData>(createInitialData)
   const [errors, setErrors] = useState<
@@ -192,7 +200,9 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
     (currentStep: number): boolean => {
       const nextErrors: typeof errors = {}
 
-      if (currentStep === 0) {
+      // Step 0 = Role selection (no validation needed, always has default)
+
+      if (currentStep === 1) {
         if (!data.title.trim() || data.title.trim().length < 3) {
           nextErrors.title = 'Title must be at least 3 characters'
         }
@@ -204,7 +214,7 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
         }
       }
 
-      if (currentStep === 1) {
+      if (currentStep === 2) {
         const hasInvalidMilestone =
           data.milestones.length === 0 ||
           data.milestones.some((milestone) => {
@@ -228,13 +238,13 @@ export function useContractBuilder(options: ContractBuilderOptions = {}) {
         }
       }
 
-      if (currentStep === 2) {
+      if (currentStep === 3) {
         if (!data.terms.trim() || data.terms.trim().length < 20) {
           nextErrors.terms = 'Terms must be at least 20 characters'
         }
       }
 
-      if (requireCounterparty && currentStep === 3) {
+      if (requireCounterparty && currentStep === 4) {
         if (!data.counterparty_email.trim()) {
           nextErrors.counterparty_email =
             'Enter the counterparty email address'

@@ -72,6 +72,7 @@ export function ContractStateBadge({ state }: { state: string }) {
   const map: Record<string, { variant: BadgeProps['variant']; label: string }> =
     {
       draft: { variant: 'default', label: 'Draft' },
+      negotiating: { variant: 'accent', label: 'Negotiating' },
       pending: { variant: 'warning', label: 'Pending' },
       funded: { variant: 'accent', label: 'Funded' },
       active: { variant: 'success', label: 'Active' },

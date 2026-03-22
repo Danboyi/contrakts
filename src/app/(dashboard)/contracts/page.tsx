@@ -20,6 +20,7 @@ export const metadata = { title: 'Contracts' }
 const STATE_FILTERS: { label: string; value: ContractState | 'all' }[] = [
   { label: 'All', value: 'all' },
   { label: 'Active', value: 'active' },
+  { label: 'Negotiating', value: 'negotiating' },
   { label: 'Pending', value: 'pending' },
   { label: 'In review', value: 'in_review' },
   { label: 'Disputed', value: 'disputed' },
