@@ -140,7 +140,7 @@ export default async function ContractsPage({
 
       {contracts.length === 0 ? (
         <EmptyState
-          icon={<FileText size={24} />}
+          illustration="contracts"
           title={
             stateFilter !== 'all'
               ? `No ${stateFilter.replace('_', ' ')} contracts`

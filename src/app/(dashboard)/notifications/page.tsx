@@ -119,7 +119,7 @@ export default function NotificationsPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon={<Bell size={22} />}
+          illustration="notifications"
           title="No notifications"
           description={
             tab === 'unread'

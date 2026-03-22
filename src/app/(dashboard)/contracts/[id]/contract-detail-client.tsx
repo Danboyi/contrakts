@@ -17,6 +17,7 @@ import {
 import { Confetti } from '@/components/ui/confetti'
 import { ActionBanner } from '@/components/contracts/action-banner'
 import { MilestoneTimeline } from '@/components/contracts/milestone-timeline'
+import { ContractStateTimeline } from '@/components/contracts/state-timeline'
 import { MilestoneTracker } from '@/components/contracts/milestone-tracker'
 import { NegotiationReviewPanel } from '@/components/contracts/negotiation-review-panel'
 import { NegotiationTimeline } from '@/components/contracts/negotiation-timeline'
@@ -487,6 +488,13 @@ export function ContractDetailClient({
           />
         </div>
       )}
+
+      <div className="mb-6 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-4">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[hsl(var(--color-text-3))]">
+          Contract lifecycle
+        </p>
+        <ContractStateTimeline state={contract.state as import('@/components/contracts/state-timeline').ContractState} />
+      </div>
 
       <div className="mb-6">
         <EscrowBar

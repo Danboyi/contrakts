@@ -6,16 +6,6 @@ import { Suspense, useEffect, useState, useTransition } from 'react'
 import { ArrowRight, Loader2, Lock, Mail } from 'lucide-react'
 import { login, sendMagicLink } from '@/lib/auth/actions'
 
-function getInputFocusStyles(target: HTMLInputElement) {
-  target.style.borderColor = 'hsl(var(--color-accent))'
-  target.style.boxShadow = '0 0 0 3px hsl(var(--color-accent) / 0.12)'
-}
-
-function resetInputFocusStyles(target: HTMLInputElement) {
-  target.style.borderColor = 'hsl(var(--color-border))'
-  target.style.boxShadow = 'none'
-}
-
 function LoginPageContent() {
   const searchParams = useSearchParams()
   const rateLimited = searchParams.get('error') === 'too_many_attempts'
@@ -35,12 +25,9 @@ function LoginPageContent() {
     event.preventDefault()
     setError(null)
     const formData = new FormData(event.currentTarget)
-
     startTransition(async () => {
       const result = await login(formData)
-      if (result?.error) {
-        setError(result.error)
-      }
+      if (result?.error) setError(result.error)
     })
   }
 
@@ -48,113 +35,39 @@ function LoginPageContent() {
     event.preventDefault()
     setError(null)
     const email = new FormData(event.currentTarget).get('email') as string
-
     startTransition(async () => {
       const result = await sendMagicLink(email)
-      if (result?.error) {
-        setError(result.error)
-      } else {
-        setMagicOk(true)
-      }
+      if (result?.error) setError(result.error)
+      else setMagicOk(true)
     })
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    height: '44px',
-    padding: '0 14px 0 40px',
-    background: 'hsl(var(--color-surface-2))',
-    border: '0.5px solid hsl(var(--color-border))',
-    borderRadius: 'var(--radius-md)',
-    color: 'hsl(var(--color-text-1))',
-    fontSize: '14px',
-    outline: 'none',
-    transition: 'border-color 150ms ease, box-shadow 150ms ease',
-  }
+  const inputClass =
+    'h-11 w-full rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] pl-10 pr-4 text-sm text-[hsl(var(--color-text-1))] outline-none placeholder:text-[hsl(var(--color-text-3))] transition-all focus:border-[hsl(var(--color-accent))] focus:ring-2 focus:ring-[hsl(var(--color-accent)/0.12)]'
 
-  const fieldStyle: React.CSSProperties = {
-    position: 'relative',
-    marginBottom: '12px',
-  }
+  const iconClass =
+    'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[hsl(var(--color-text-3))]'
 
-  const iconStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: '12px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: 'hsl(var(--color-text-3))',
-    pointerEvents: 'none',
-  }
-
-  const buttonStyle: React.CSSProperties = {
-    width: '100%',
-    height: '44px',
-    marginBottom: '16px',
-    background: isPending
-      ? 'hsl(var(--color-accent) / 0.6)'
-      : 'hsl(var(--color-accent))',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 'var(--radius-md)',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: isPending ? 'not-allowed' : 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    transition: 'all 150ms ease',
-  }
+  const submitClass =
+    'mb-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[hsl(var(--color-accent))] text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60'
 
   return (
     <div>
-      <h2
-        style={{
-          fontSize: '24px',
-          fontWeight: 600,
-          color: 'hsl(var(--color-text-1))',
-          marginBottom: '8px',
-        }}
-      >
+      <h2 className="mb-2 text-2xl font-semibold text-[hsl(var(--color-text-1))]">
         Welcome back
       </h2>
-      <p
-        style={{
-          fontSize: '14px',
-          color: 'hsl(var(--color-text-2))',
-          marginBottom: '32px',
-        }}
-      >
+      <p className="mb-8 text-sm text-[hsl(var(--color-text-2))]">
         Sign in to your Contrakts account.
       </p>
 
       {rateLimited && (
-        <div
-          style={{
-            padding: '12px 16px',
-            marginBottom: '16px',
-            background: 'hsl(var(--color-danger)/0.1)',
-            border: '0.5px solid hsl(var(--color-danger)/0.3)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '13px',
-            color: 'hsl(var(--color-danger))',
-          }}
-        >
+        <div className="mb-4 rounded-[var(--radius-md)] border border-[hsl(var(--color-danger)/0.3)] bg-[hsl(var(--color-danger)/0.1)] px-4 py-3 text-sm text-[hsl(var(--color-danger))]">
           Too many login attempts. Please wait 15 minutes before trying again.
         </div>
       )}
 
-      <div
-        style={{
-          display: 'flex',
-          background: 'hsl(var(--color-surface))',
-          border: '0.5px solid hsl(var(--color-border))',
-          borderRadius: 'var(--radius-md)',
-          padding: '3px',
-          marginBottom: '24px',
-          gap: '3px',
-        }}
-      >
+      {/* Mode toggle */}
+      <div className="mb-6 flex gap-1 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-1">
         {(['password', 'magic'] as const).map((value) => (
           <button
             key={value}
@@ -164,24 +77,12 @@ function LoginPageContent() {
               setError(null)
               setMagicOk(false)
             }}
-            style={{
-              flex: 1,
-              height: '34px',
-              fontSize: '13px',
-              fontWeight: mode === value ? 500 : 400,
-              borderRadius: 'calc(var(--radius-md) - 2px)',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 150ms ease',
-              background:
-                mode === value
-                  ? 'hsl(var(--color-surface-2))'
-                  : 'transparent',
-              color:
-                mode === value
-                  ? 'hsl(var(--color-text-1))'
-                  : 'hsl(var(--color-text-3))',
-            }}
+            className={[
+              'flex-1 rounded-[calc(var(--radius-md)-2px)] py-2 text-[13px] transition-all duration-150',
+              mode === value
+                ? 'bg-[hsl(var(--color-surface-2))] font-medium text-[hsl(var(--color-text-1))]'
+                : 'font-normal text-[hsl(var(--color-text-3))]',
+            ].join(' ')}
           >
             {value === 'password' ? 'Password' : 'Magic link'}
           </button>
@@ -190,54 +91,35 @@ function LoginPageContent() {
 
       {mode === 'password' ? (
         <form onSubmit={handleLogin}>
-          <div style={fieldStyle}>
-            <Mail size={15} style={iconStyle} />
+          <div className="relative mb-3">
+            <Mail size={15} className={iconClass} />
             <input
               name="email"
               type="email"
               placeholder="Email address"
               required
               autoFocus
-              style={inputStyle}
-              onFocus={(event) => getInputFocusStyles(event.target)}
-              onBlur={(event) => resetInputFocusStyles(event.target)}
+              className={inputClass}
             />
           </div>
-          <div style={fieldStyle}>
-            <Lock size={15} style={iconStyle} />
+          <div className="relative mb-4">
+            <Lock size={15} className={iconClass} />
             <input
               name="password"
               type="password"
               placeholder="Password"
               required
-              style={inputStyle}
-              onFocus={(event) => getInputFocusStyles(event.target)}
-              onBlur={(event) => resetInputFocusStyles(event.target)}
+              className={inputClass}
             />
           </div>
 
           {error && (
-            <div
-              style={{
-                padding: '10px 14px',
-                marginBottom: '16px',
-                background: 'hsl(var(--color-danger) / 0.1)',
-                border: '0.5px solid hsl(var(--color-danger) / 0.3)',
-                borderRadius: 'var(--radius-md)',
-                fontSize: '13px',
-                color: 'hsl(var(--color-danger))',
-              }}
-            >
+            <div className="mb-4 rounded-[var(--radius-md)] border border-[hsl(var(--color-danger)/0.3)] bg-[hsl(var(--color-danger)/0.1)] px-4 py-2.5 text-[13px] text-[hsl(var(--color-danger))]">
               {error}
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isPending}
-            style={buttonStyle}
-            className="hover:brightness-110 active:scale-[0.98]"
-          >
+          <button type="submit" disabled={isPending} className={submitClass}>
             {isPending ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
@@ -254,67 +136,35 @@ function LoginPageContent() {
       ) : (
         <form onSubmit={handleMagicLink}>
           {magicOk ? (
-            <div
-              style={{
-                padding: '20px',
-                textAlign: 'center',
-                background: 'hsl(var(--color-success) / 0.08)',
-                border: '0.5px solid hsl(var(--color-success) / 0.25)',
-                borderRadius: 'var(--radius-lg)',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: '14px',
-                  color: 'hsl(var(--color-success))',
-                  fontWeight: 500,
-                  marginBottom: '6px',
-                }}
-              >
+            <div className="rounded-[var(--radius-lg)] border border-[hsl(var(--color-success)/0.25)] bg-[hsl(var(--color-success)/0.08)] p-5 text-center">
+              <p className="mb-1.5 text-sm font-medium text-[hsl(var(--color-success))]">
                 Check your email
               </p>
-              <p style={{ fontSize: '13px', color: 'hsl(var(--color-text-2))' }}>
+              <p className="text-[13px] text-[hsl(var(--color-text-2))]">
                 We sent a sign-in link to your inbox. It expires in 10 minutes.
               </p>
             </div>
           ) : (
             <>
-              <div style={fieldStyle}>
-                <Mail size={15} style={iconStyle} />
+              <div className="relative mb-4">
+                <Mail size={15} className={iconClass} />
                 <input
                   name="email"
                   type="email"
                   placeholder="Email address"
                   required
                   autoFocus
-                  style={inputStyle}
-                  onFocus={(event) => getInputFocusStyles(event.target)}
-                  onBlur={(event) => resetInputFocusStyles(event.target)}
+                  className={inputClass}
                 />
               </div>
 
               {error && (
-                <div
-                  style={{
-                    padding: '10px 14px',
-                    marginBottom: '16px',
-                    background: 'hsl(var(--color-danger) / 0.1)',
-                    border: '0.5px solid hsl(var(--color-danger) / 0.3)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: '13px',
-                    color: 'hsl(var(--color-danger))',
-                  }}
-                >
+                <div className="mb-4 rounded-[var(--radius-md)] border border-[hsl(var(--color-danger)/0.3)] bg-[hsl(var(--color-danger)/0.1)] px-4 py-2.5 text-[13px] text-[hsl(var(--color-danger))]">
                   {error}
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isPending}
-                style={buttonStyle}
-                className="hover:brightness-110 active:scale-[0.98]"
-              >
+              <button type="submit" disabled={isPending} className={submitClass}>
                 {isPending ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
@@ -332,43 +182,23 @@ function LoginPageContent() {
         </form>
       )}
 
-      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-        <span style={{ fontSize: '13px', color: 'hsl(var(--color-text-3))' }}>
-          Don&apos;t have an account?{' '}
-        </span>
+      <p className="mb-6 text-center text-[13px] text-[hsl(var(--color-text-3))]">
+        Don&apos;t have an account?{' '}
         <Link
           href="/signup"
-          style={{
-            fontSize: '13px',
-            color: 'hsl(var(--color-accent))',
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
+          className="font-medium text-[hsl(var(--color-accent))] hover:underline"
         >
           Sign up
         </Link>
-      </div>
+      </p>
 
-      <p
-        style={{
-          fontSize: '12px',
-          color: 'hsl(var(--color-text-3))',
-          textAlign: 'center',
-          lineHeight: '1.6',
-        }}
-      >
+      <p className="text-center text-xs leading-relaxed text-[hsl(var(--color-text-3))]">
         By continuing you agree to the{' '}
-        <a
-          href="#"
-          style={{ color: 'hsl(var(--color-text-2))', textDecoration: 'none' }}
-        >
+        <a href="#" className="text-[hsl(var(--color-text-2))] hover:underline">
           Terms of Service
         </a>{' '}
         and{' '}
-        <a
-          href="#"
-          style={{ color: 'hsl(var(--color-text-2))', textDecoration: 'none' }}
-        >
+        <a href="#" className="text-[hsl(var(--color-text-2))] hover:underline">
           Privacy Policy
         </a>
         .
