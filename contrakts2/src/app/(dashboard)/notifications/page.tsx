@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Bell, CheckCheck, Inbox } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -46,6 +46,34 @@ export default function NotificationsPage() {
 
     return FILTER_TYPES[tab].includes(notification.type)
   })
+
+  // Group notifications by day
+  const groupedByDay = useMemo(() => {
+    const groups: { label: string; items: Notification[] }[] = []
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    for (const notification of filtered) {
+      const date = new Date(notification.created_at)
+      let label: string
+      if (date.toDateString() === today.toDateString()) {
+        label = 'Today'
+      } else if (date.toDateString() === yesterday.toDateString()) {
+        label = 'Yesterday'
+      } else {
+        label = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      }
+
+      const existing = groups.find((g) => g.label === label)
+      if (existing) {
+        existing.items.push(notification)
+      } else {
+        groups.push({ label, items: [notification] })
+      }
+    }
+    return groups
+  }, [filtered])
 
   async function handleClick(notification: Notification) {
     if (!notification.read) {
@@ -132,60 +160,73 @@ export default function NotificationsPage() {
           size="md"
         />
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))]">
-          {filtered.map((notification, index) => {
-            const config = getNotificationConfig(notification.type)
-            const Icon = config.icon
+        <div className="space-y-6">
+          {groupedByDay.map((group) => (
+            <div key={group.label}>
+              <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[hsl(var(--color-text-3))]">
+                <span className="h-px flex-1 bg-[hsl(var(--color-border))]" />
+                {group.label}
+                <span className="h-px flex-1 bg-[hsl(var(--color-border))]" />
+              </p>
+              <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))]">
+                {group.items.map((notification, index) => {
+                  const config = getNotificationConfig(notification.type)
+                  const Icon = config.icon
 
-            return (
-              <button
-                key={notification.id}
-                type="button"
-                onClick={() => void handleClick(notification)}
-                className={cn(
-                  'group flex w-full items-start gap-4 border-b border-[hsl(var(--color-border))] px-5 py-4 text-left transition-all duration-200 last:border-0',
-                  'hover:bg-[hsl(var(--color-surface-2)/0.5)]',
-                  !notification.read && [
-                    'border-l-2 border-l-[hsl(var(--color-accent))]',
-                    'bg-[hsl(var(--color-accent)/0.02)]',
-                  ]
-                )}
-                style={{
-                  animationDelay: `${index * 30}ms`,
-                }}
-              >
-                <div
-                  className={cn(
-                    'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110',
-                    config.bg
-                  )}
-                >
-                  <Icon size={16} className={config.color} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <p
+                  return (
+                    <button
+                      key={notification.id}
+                      type="button"
+                      onClick={() => void handleClick(notification)}
                       className={cn(
-                        'text-sm leading-snug text-[hsl(var(--color-text-1))]',
-                        !notification.read ? 'font-semibold' : 'font-medium'
+                        'group flex w-full items-start gap-4 border-b border-[hsl(var(--color-border))] px-5 py-4 text-left transition-all duration-200 last:border-0',
+                        'hover:bg-[hsl(var(--color-surface-2)/0.5)]',
+                        !notification.read && [
+                          'border-l-2 border-l-[hsl(var(--color-accent))]',
+                          'bg-[hsl(var(--color-accent)/0.02)]',
+                        ],
+                        'animate-slide-up'
                       )}
+                      style={{
+                        animationDelay: `${index * 40}ms`,
+                        animationFillMode: 'backwards',
+                      }}
                     >
-                      {notification.title}
-                    </p>
-                    <p className="mt-0.5 shrink-0 text-xs text-[hsl(var(--color-text-3))]">
-                      {formatRelative(notification.created_at)}
-                    </p>
-                  </div>
-                  <p className="mt-0.5 line-clamp-2 text-sm leading-relaxed text-[hsl(var(--color-text-2))]">
-                    {notification.body}
-                  </p>
-                </div>
-                {!notification.read && (
-                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[hsl(var(--color-accent))]" />
-                )}
-              </button>
-            )
-          })}
+                      <div
+                        className={cn(
+                          'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110',
+                          config.bg
+                        )}
+                      >
+                        <Icon size={16} className={config.color} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-4">
+                          <p
+                            className={cn(
+                              'text-sm leading-snug text-[hsl(var(--color-text-1))]',
+                              !notification.read ? 'font-semibold' : 'font-medium'
+                            )}
+                          >
+                            {notification.title}
+                          </p>
+                          <p className="mt-0.5 shrink-0 text-xs text-[hsl(var(--color-text-3))]">
+                            {formatRelative(notification.created_at)}
+                          </p>
+                        </div>
+                        <p className="mt-0.5 line-clamp-2 text-sm leading-relaxed text-[hsl(var(--color-text-2))]">
+                          {notification.body}
+                        </p>
+                      </div>
+                      {!notification.read && (
+                        <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[hsl(var(--color-accent))]" />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

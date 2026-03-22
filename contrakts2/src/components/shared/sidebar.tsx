@@ -144,15 +144,21 @@ export function Sidebar({
         </span>
       </div>
 
-      {/* Quick search hint */}
+      {/* Quick search hint — opens command palette */}
       <div className="mx-3 mb-4">
-        <div className="flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] px-3 py-2 text-[hsl(var(--color-text-3))] transition-colors hover:border-[hsl(var(--color-border-2))] hover:text-[hsl(var(--color-text-2))] cursor-pointer">
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
+          }}
+          className="flex w-full items-center gap-2.5 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] px-3 py-2 text-[hsl(var(--color-text-3))] transition-colors hover:border-[hsl(var(--color-border-2))] hover:text-[hsl(var(--color-text-2))] cursor-pointer"
+        >
           <Search size={14} />
-          <span className="flex-1 text-xs">Search...</span>
+          <span className="flex-1 text-left text-xs">Search...</span>
           <kbd className="hidden rounded border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-1.5 py-0.5 font-mono text-2xs text-[hsl(var(--color-text-3))] lg:block">
-            /
+            ⌘K
           </kbd>
-        </div>
+        </button>
       </div>
 
       {/* Workspace nav */}

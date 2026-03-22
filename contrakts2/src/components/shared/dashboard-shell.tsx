@@ -4,7 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FileText, Home, Plus, Settings, User } from 'lucide-react'
+import { CommandPalette } from './command-palette'
 import { Header } from './header'
+import { KeyboardShortcuts } from './keyboard-shortcuts'
 import { PageTransition } from './page-transition'
 import { Sidebar } from './sidebar'
 import { cn } from '@/lib/utils/cn'
@@ -72,6 +74,10 @@ export function DashboardShell({
           </div>
         </div>
       </main>
+
+      {/* Command palette & keyboard shortcuts */}
+      <CommandPalette />
+      <KeyboardShortcuts />
 
       {/* Mobile bottom nav — enhanced with center action button */}
       <nav

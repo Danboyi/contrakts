@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import {
   ArrowRight,
-  CheckCircle,
   DollarSign,
   FileText,
   Scale,
@@ -13,6 +12,15 @@ import {
 } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import {
+  AnimatedHeroBadge,
+  AnimatedHeadline,
+  AnimatedHeroCtas,
+  AnimatedSection,
+  AnimatedFeatureGrid,
+  AnimatedStepGrid,
+  AnimatedCounter,
+} from '@/components/landing/animated-sections'
 
 const features = [
   {
@@ -109,53 +117,54 @@ export default async function LandingPage() {
 
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-4 py-1.5">
-            <Sparkles size={14} className="text-[hsl(var(--color-accent))]" />
-            <span className="text-xs font-medium text-[hsl(var(--color-text-2))]">
-              AI-powered contract management
-            </span>
-          </div>
+          <AnimatedHeroBadge>
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-4 py-1.5">
+              <Sparkles size={14} className="text-[hsl(var(--color-accent))]" />
+              <span className="text-xs font-medium text-[hsl(var(--color-text-2))]">
+                AI-powered contract management
+              </span>
+            </div>
+          </AnimatedHeroBadge>
 
           {/* Headline */}
-          <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-[hsl(var(--color-text-1))] md:text-5xl lg:text-[56px]">
-            Every deal.{' '}
-            <span className="text-[hsl(var(--color-accent))]">Protected.</span>
-          </h1>
+          <AnimatedHeadline>
+            <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-[hsl(var(--color-text-1))] md:text-5xl lg:text-[56px]">
+              Every deal.{' '}
+              <span className="text-[hsl(var(--color-accent))]">Protected.</span>
+            </h1>
 
-          <p className="mx-auto mb-10 max-w-2xl text-md leading-relaxed text-[hsl(var(--color-text-2))] md:text-lg">
-            Create contracts, escrow payments, track milestones, and resolve disputes —
-            all in one platform. Powered by AI, protected by escrow.
-          </p>
+            <p className="mx-auto mb-10 max-w-2xl text-md leading-relaxed text-[hsl(var(--color-text-2))] md:text-lg">
+              Create contracts, escrow payments, track milestones, and resolve disputes —
+              all in one platform. Powered by AI, protected by escrow.
+            </p>
+          </AnimatedHeadline>
 
           {/* CTAs */}
-          <div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
-            >
-              Start for free
-              <ArrowRight
-                size={16}
-                className="transition-transform group-hover:translate-x-0.5"
-              />
-            </Link>
-            <Link
-              href="#features"
-              className="inline-flex items-center gap-2 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border-2))] bg-[hsl(var(--color-surface))] px-8 py-3.5 text-md font-medium text-[hsl(var(--color-text-1))] transition-all hover:bg-[hsl(var(--color-surface-2))]"
-            >
-              See how it works
-            </Link>
-          </div>
+          <AnimatedHeroCtas>
+            <div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link
+                href="/signup"
+                className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
+              >
+                Start for free
+                <ArrowRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+              <Link
+                href="#features"
+                className="inline-flex items-center gap-2 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border-2))] bg-[hsl(var(--color-surface))] px-8 py-3.5 text-md font-medium text-[hsl(var(--color-text-1))] transition-all hover:bg-[hsl(var(--color-surface-2))]"
+              >
+                See how it works
+              </Link>
+            </div>
+          </AnimatedHeroCtas>
 
           {/* Trust stats */}
           <div className="mx-auto grid max-w-2xl grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl font-bold text-[hsl(var(--color-accent))]">{stat.value}</p>
-                <p className="mt-1 text-xs text-[hsl(var(--color-text-3))]">
-                  {stat.label}
-                </p>
-              </div>
+              <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
             ))}
           </div>
         </div>
@@ -164,7 +173,7 @@ export default async function LandingPage() {
       {/* Features */}
       <section id="features" className="border-t border-[hsl(var(--color-border)/0.5)] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-16 text-center">
+          <AnimatedSection className="mb-16 text-center">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[hsl(var(--color-accent))]">
               Features
             </p>
@@ -175,9 +184,9 @@ export default async function LandingPage() {
               From contract creation to final payment — every step is protected,
               tracked, and transparent.
             </p>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatedFeatureGrid>
             {features.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
@@ -194,23 +203,23 @@ export default async function LandingPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </AnimatedFeatureGrid>
         </div>
       </section>
 
       {/* How it works */}
       <section className="border-t border-[hsl(var(--color-border)/0.5)] py-24">
         <div className="mx-auto max-w-4xl px-6">
-          <div className="mb-16 text-center">
+          <AnimatedSection className="mb-16 text-center">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[hsl(var(--color-accent))]">
               How it works
             </p>
             <h2 className="text-2xl font-bold text-[hsl(var(--color-text-1))] md:text-3xl">
               Four steps to a protected deal
             </h2>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid gap-8 md:grid-cols-4">
+          <AnimatedStepGrid>
             {[
               { step: '01', title: 'Create', desc: 'Draft a contract with AI assistance or use a template' },
               { step: '02', title: 'Fund', desc: 'Deposit escrow via bank, card, or crypto' },
@@ -227,57 +236,61 @@ export default async function LandingPage() {
                 <p className="text-sm text-[hsl(var(--color-text-2))]">{desc}</p>
               </div>
             ))}
-          </div>
+          </AnimatedStepGrid>
         </div>
       </section>
 
       {/* Payment providers */}
-      <section className="border-t border-[hsl(var(--color-border)/0.5)] py-16">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <p className="mb-6 text-xs font-medium uppercase tracking-widest text-[hsl(var(--color-text-3))]">
-            Integrated payment providers
-          </p>
-          <div className="flex items-center justify-center gap-8">
-            {paymentProviders.map((name) => (
-              <div
-                key={name}
-                className="flex items-center gap-2 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-6 py-3"
-              >
-                <Globe size={16} className="text-[hsl(var(--color-text-3))]" />
-                <span className="text-sm font-medium text-[hsl(var(--color-text-2))]">
-                  {name}
-                </span>
-              </div>
-            ))}
+      <AnimatedSection>
+        <section className="border-t border-[hsl(var(--color-border)/0.5)] py-16">
+          <div className="mx-auto max-w-4xl px-6 text-center">
+            <p className="mb-6 text-xs font-medium uppercase tracking-widest text-[hsl(var(--color-text-3))]">
+              Integrated payment providers
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
+              {paymentProviders.map((name) => (
+                <div
+                  key={name}
+                  className="flex items-center gap-2 rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-6 py-3 transition-all duration-200 hover:border-[hsl(var(--color-border-2))] hover:shadow-sm"
+                >
+                  <Globe size={16} className="text-[hsl(var(--color-text-3))]" />
+                  <span className="text-sm font-medium text-[hsl(var(--color-text-2))]">
+                    {name}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* CTA */}
-      <section className="border-t border-[hsl(var(--color-border)/0.5)] py-24">
-        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[var(--radius-2xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-8 py-16 text-center md:px-16">
-          <div className="pointer-events-none absolute inset-0 bg-[hsl(var(--color-accent)/0.03)]" />
-          <div className="relative z-10">
-            <h2 className="mb-4 text-2xl font-bold text-[hsl(var(--color-text-1))] md:text-3xl">
-              Ready to protect your next deal?
-            </h2>
-            <p className="mx-auto mb-8 max-w-md text-sm text-[hsl(var(--color-text-2))]">
-              Join thousands of professionals using Contrakts to execute contracts
-              with confidence.
-            </p>
-            <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
-            >
-              Get started free
-              <ArrowRight
-                size={16}
-                className="transition-transform group-hover:translate-x-0.5"
-              />
-            </Link>
+      <AnimatedSection>
+        <section className="border-t border-[hsl(var(--color-border)/0.5)] py-24">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[var(--radius-2xl)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-8 py-16 text-center md:px-16">
+            <div className="pointer-events-none absolute inset-0 bg-[hsl(var(--color-accent)/0.03)]" />
+            <div className="relative z-10">
+              <h2 className="mb-4 text-2xl font-bold text-[hsl(var(--color-text-1))] md:text-3xl">
+                Ready to protect your next deal?
+              </h2>
+              <p className="mx-auto mb-8 max-w-md text-sm text-[hsl(var(--color-text-2))]">
+                Join thousands of professionals using Contrakts to execute contracts
+                with confidence.
+              </p>
+              <Link
+                href="/signup"
+                className="group inline-flex items-center gap-2 rounded-[var(--radius-lg)] bg-[hsl(var(--color-accent))] px-8 py-3.5 text-md font-semibold text-white transition-all hover:bg-[hsl(var(--color-accent-hover))] hover:shadow-md"
+              >
+                Get started free
+                <ArrowRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* Footer */}
       <footer className="border-t border-[hsl(var(--color-border)/0.5)] py-12">
