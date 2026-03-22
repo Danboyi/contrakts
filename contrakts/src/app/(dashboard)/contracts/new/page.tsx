@@ -18,6 +18,7 @@ import { toast } from 'sonner'
 import { ContractDrafter } from '@/components/ai'
 import {
   ContractPreview,
+  RoleSelect,
   StepCounterparty,
   StepDetails,
   StepMilestones,
@@ -35,6 +36,7 @@ import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
 
 const STEPS = [
+  { label: 'Role' },
   { label: 'Details' },
   { label: 'Milestones' },
   { label: 'Terms' },
@@ -43,6 +45,7 @@ const STEPS = [
 ] as const
 
 const STEP_TITLES = [
+  'Choose your role',
   'Contract details',
   'Add milestones',
   'Terms and conditions',
@@ -51,6 +54,7 @@ const STEP_TITLES = [
 ] as const
 
 const STEP_SUBTITLES = [
+  'Are you hiring someone or offering your services?',
   'Give your contract a clear title and set the basic parameters.',
   'Break the work into milestones. Payment releases per approval.',
   'Define what both parties are agreeing to.',
@@ -192,7 +196,7 @@ function NewContractPageContent() {
   const previewCounterparty =
     data.counterparty_email.trim() || 'No counterparty yet'
 
-  function handleApplyDraft(draft: AiContractDraft, targetStep = 3) {
+  function handleApplyDraft(draft: AiContractDraft, targetStep = 4) {
     setServerError(null)
     setDirection(1)
     setMode('manual')
@@ -260,6 +264,7 @@ function NewContractPageContent() {
 
     startTransition(async () => {
       const result = await createContract({
+        initiator_role: data.initiator_role,
         title: data.title,
         description: data.description || undefined,
         industry: data.industry,
@@ -470,9 +475,15 @@ function NewContractPageContent() {
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                 >
                   {step === 0 && (
-                    <StepDetails data={data} errors={errors} update={update} />
+                    <RoleSelect
+                      value={data.initiator_role}
+                      onChange={(role) => update('initiator_role', role)}
+                    />
                   )}
                   {step === 1 && (
+                    <StepDetails data={data} errors={errors} update={update} />
+                  )}
+                  {step === 2 && (
                     <StepMilestones
                       data={data}
                       errors={errors}
@@ -482,17 +493,18 @@ function NewContractPageContent() {
                       moveMilestone={moveMilestone}
                     />
                   )}
-                  {step === 2 && (
+                  {step === 3 && (
                     <StepTerms data={data} errors={errors} update={update} />
                   )}
-                  {step === 3 && (
+                  {step === 4 && (
                     <StepCounterparty
                       data={data}
                       errors={errors}
                       update={update}
+                      initiatorRole={data.initiator_role}
                     />
                   )}
-                  {step === 4 && (
+                  {step === 5 && (
                     <StepReview
                       data={data}
                       totalAmount={totalAmount}
@@ -645,7 +657,7 @@ function NewContractPageContent() {
         open={successModal}
         onOpenChange={handleCloseSuccessModal}
         title="Contract sent"
-        description="Your contract has been created and the invite has been dispatched."
+        description="Your contract proposal has been sent for review."
         hideClose
         size="md"
       >
@@ -654,8 +666,9 @@ function NewContractPageContent() {
             <CheckCircle size={26} className="text-[hsl(var(--color-success))]" />
           </div>
           <p className="mb-5 text-sm leading-relaxed text-[hsl(var(--color-text-2))]">
-            Share this link with the counterparty if they have not received the
-            email. Once they sign, you will be notified to fund the escrow.
+            Share this link with the other party if they have not received the
+            email. They can review, negotiate terms and milestones, then accept.
+            Once both parties agree and sign, the project can be funded.
           </p>
 
           <div className="mb-5 flex w-full items-center gap-2 rounded-[var(--radius-md)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] p-3">

@@ -81,7 +81,7 @@ export function ContractPreview({
         <div className="mb-4 flex items-start gap-3 rounded-[var(--radius-md)] bg-[hsl(var(--color-surface-2))] p-3">
           <div className="min-w-0 flex-1">
             <p className="mb-1 text-[10px] uppercase tracking-wide text-[hsl(var(--color-text-3))]">
-              Initiator
+              {data.initiator_role === 'vendor' ? 'Vendor (You)' : 'Client (You)'}
             </p>
             <p className="truncate text-sm font-medium text-[hsl(var(--color-text-1))]">
               {userName}
@@ -90,7 +90,7 @@ export function ContractPreview({
           <div className="w-px self-stretch bg-[hsl(var(--color-border))]" />
           <div className="min-w-0 flex-1">
             <p className="mb-1 text-[10px] uppercase tracking-wide text-[hsl(var(--color-text-3))]">
-              Counterparty
+              {data.initiator_role === 'vendor' ? 'Client' : 'Vendor'}
             </p>
             <p
               className={cn(

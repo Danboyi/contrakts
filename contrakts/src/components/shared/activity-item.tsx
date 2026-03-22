@@ -1,6 +1,7 @@
 import type { ElementType } from 'react'
 import {
   AlertTriangle,
+  ArrowRightLeft,
   CheckCircle,
   Clock,
   DollarSign,
@@ -8,6 +9,7 @@ import {
   PenLine,
   Send,
   Shield,
+  ThumbsUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatRelative } from '@/lib/utils/format-date'
@@ -74,6 +76,25 @@ const EVENT_MAP: Record<
     color: 'text-[hsl(var(--color-success))]',
     bg: 'bg-[hsl(var(--color-success)/0.1)]',
     label: () => 'Dispute resolved',
+  },
+  'contract.review_submitted': {
+    icon: ArrowRightLeft,
+    color: 'text-[hsl(var(--color-accent))]',
+    bg: 'bg-[hsl(var(--color-accent)/0.1)]',
+    label: (payload) =>
+      `Review submitted${payload.changes_summary ? `: ${payload.changes_summary}` : ''}`,
+  },
+  'contract.terms_accepted': {
+    icon: ThumbsUp,
+    color: 'text-[hsl(var(--color-success))]',
+    bg: 'bg-[hsl(var(--color-success)/0.1)]',
+    label: () => 'Contract terms accepted',
+  },
+  'contract.voided': {
+    icon: AlertTriangle,
+    color: 'text-[hsl(var(--color-danger))]',
+    bg: 'bg-[hsl(var(--color-danger)/0.1)]',
+    label: () => 'Contract voided',
   },
   'contract.complete': {
     icon: CheckCircle,

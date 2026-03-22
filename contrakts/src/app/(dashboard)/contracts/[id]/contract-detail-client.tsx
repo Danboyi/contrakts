@@ -14,8 +14,11 @@ import {
   Share2,
   Trash2,
 } from 'lucide-react'
+import { Confetti } from '@/components/ui/confetti'
 import { ActionBanner } from '@/components/contracts/action-banner'
 import { MilestoneTracker } from '@/components/contracts/milestone-tracker'
+import { NegotiationReviewPanel } from '@/components/contracts/negotiation-review-panel'
+import { NegotiationTimeline } from '@/components/contracts/negotiation-timeline'
 import { PartyCard } from '@/components/contracts/party-card'
 import { EscrowBar } from '@/components/payments/escrow-bar'
 import { ActivityItem } from '@/components/shared/activity-item'
@@ -39,12 +42,13 @@ import { saveContractAsTemplate } from '@/lib/templates/actions'
 import { cn } from '@/lib/utils/cn'
 import { formatDate, formatDateTime } from '@/lib/utils/format-date'
 import { formatCurrency } from '@/lib/utils/format-currency'
-import type { Contract, Milestone } from '@/types'
+import type { Contract, Milestone, NegotiationRound } from '@/types'
 
 type DetailContract = Contract & {
   initiator: NonNullable<Contract['initiator']> | null
   counterparty: NonNullable<Contract['counterparty']> | null
   milestones: Milestone[]
+  negotiations?: NegotiationRound[]
 }
 
 type Banner =
@@ -98,8 +102,13 @@ export function ContractDetailClient({
 
   const isInitiator = contract.initiator_id === currentUserId
   const isCounterparty = contract.counterparty_id === currentUserId
-  const isClient = isInitiator
-  const isVendor = isCounterparty
+  const initiatorRole = contract.initiator_role ?? 'service_receiver'
+  const isClient =
+    (initiatorRole === 'service_receiver' && isInitiator) ||
+    (initiatorRole === 'vendor' && isCounterparty)
+  const isVendor =
+    (initiatorRole === 'vendor' && isInitiator) ||
+    (initiatorRole === 'service_receiver' && isCounterparty)
 
   const milestones = [...(contract.milestones ?? [])].sort(
     (a, b) => a.order_index - b.order_index
@@ -125,13 +134,29 @@ export function ContractDetailClient({
       })
   }
 
+  function handleContractUpdate() {
+    router.refresh()
+  }
+
   function getBanner(): Banner {
+    if (contract.state === 'negotiating') {
+      return {
+        variant: 'accent',
+        message:
+          'This contract is in negotiation. Review the proposed terms and milestones below, then accept or propose changes.',
+      }
+    }
+
     if (contract.state === 'pending') {
-      if (isCounterparty && !contract.signed_counterparty_at) {
+      const needsInitiatorSig = !contract.signed_initiator_at
+      const needsCounterpartySig = !contract.signed_counterparty_at
+      const bothSigned = !needsInitiatorSig && !needsCounterpartySig
+
+      // If current user hasn't signed yet
+      if (isInitiator && needsInitiatorSig) {
         return {
           variant: 'accent',
-          message:
-            "You've been invited to this contract. Review the terms and sign to proceed.",
+          message: 'Terms agreed. Sign this contract to confirm.',
           cta: {
             label: 'Sign contract',
             loading: isPending,
@@ -142,18 +167,16 @@ export function ContractDetailClient({
                   toast.error(result.error)
                   return
                 }
-                toast.success(
-                  'Contract signed. Waiting for escrow to be funded.'
-                )
+                toast.success('Signed. Waiting for the other party.')
               }),
           },
         }
       }
 
-      if (isInitiator && !contract.signed_initiator_at) {
+      if (isCounterparty && needsCounterpartySig) {
         return {
           variant: 'accent',
-          message: 'Sign this contract to confirm you agree to the terms.',
+          message: 'Terms agreed. Sign this contract to proceed.',
           cta: {
             label: 'Sign contract',
             loading: isPending,
@@ -164,21 +187,18 @@ export function ContractDetailClient({
                   toast.error(result.error)
                   return
                 }
-                toast.success('Signed. Waiting for counterparty.')
+                toast.success('Contract signed.')
               }),
           },
         }
       }
 
-      if (
-        isInitiator &&
-        contract.signed_initiator_at &&
-        !contract.signed_counterparty_at
-      ) {
+      // Waiting for the other party to sign
+      if (!bothSigned) {
         return {
           variant: 'neutral',
           message:
-            'Waiting for the counterparty to sign. Share the invite link if needed.',
+            'Waiting for the other party to sign. Share the invite link if needed.',
           cta: {
             label: 'Share invite',
             onClick: () => setShareModal(true),
@@ -186,11 +206,8 @@ export function ContractDetailClient({
         }
       }
 
-      if (
-        isInitiator &&
-        contract.signed_initiator_at &&
-        contract.signed_counterparty_at
-      ) {
+      // Both signed — service receiver funds
+      if (bothSigned && isClient) {
         return {
           variant: 'success',
           message: 'Both parties have signed. Fund the escrow to begin work.',
@@ -198,6 +215,13 @@ export function ContractDetailClient({
             label: 'Fund escrow',
             onClick: () => router.push(`/contracts/${contract.id}/fund`),
           },
+        }
+      }
+
+      if (bothSigned && isVendor) {
+        return {
+          variant: 'success',
+          message: 'Both parties have signed. Waiting for the client to fund the escrow.',
         }
       }
     }
@@ -299,6 +323,8 @@ export function ContractDetailClient({
 
   return (
     <div className="mx-auto max-w-[800px]">
+      <Confetti trigger={contract.state === 'complete'} />
+
       <div className="mb-6">
         <Link
           href="/contracts"
@@ -398,7 +424,7 @@ export function ContractDetailClient({
                 >
                   View full terms
                 </DropdownItem>
-                {['draft', 'pending'].includes(contract.state) && (
+                {['draft', 'pending', 'negotiating'].includes(contract.state) && (
                   <>
                     <DropdownSeparator />
                     <DropdownItem
@@ -427,18 +453,39 @@ export function ContractDetailClient({
       <div className="mb-6 flex flex-col gap-4 md:flex-row">
         <PartyCard
           role="initiator"
+          roleLabel={initiatorRole === 'vendor' ? 'Vendor' : 'Client'}
           user={contract.initiator ?? null}
           signedAt={contract.signed_initiator_at}
           isYou={isInitiator}
         />
         <PartyCard
           role="counterparty"
+          roleLabel={initiatorRole === 'vendor' ? 'Client' : 'Vendor'}
           user={contract.counterparty ?? null}
           signedAt={contract.signed_counterparty_at}
           isYou={isCounterparty}
           placeholder={contract.invite_token ? 'Invite sent' : 'Not invited yet'}
         />
       </div>
+
+      {contract.state === 'negotiating' && (
+        <div className="mb-6">
+          <NegotiationReviewPanel
+            contract={{ ...contract, milestones }}
+            currentUserId={currentUserId}
+            onUpdate={handleContractUpdate}
+          />
+        </div>
+      )}
+
+      {(contract.negotiations ?? []).length > 0 && (
+        <div className="mb-6">
+          <NegotiationTimeline
+            rounds={contract.negotiations ?? []}
+            currentUserId={currentUserId}
+          />
+        </div>
+      )}
 
       <div className="mb-6">
         <EscrowBar
