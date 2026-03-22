@@ -12,137 +12,62 @@ const trustSignals = [
 
 function MockContractCard() {
   return (
-    <div
-      style={{
-        background: 'hsl(var(--color-surface-2))',
-        border: '0.5px solid hsl(var(--color-border))',
-        borderRadius: 'var(--radius-lg)',
-        padding: '16px',
-        width: '100%',
-        maxWidth: '280px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: '12px',
-        }}
-      >
+    <div className="w-full max-w-[280px] rounded-[var(--radius-lg)] border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] p-4">
+      <div className="mb-3 flex items-start justify-between">
         <div>
-          <p
-            style={{
-              fontSize: '11px',
-              color: 'hsl(var(--color-text-3))',
-              marginBottom: '4px',
-            }}
-          >
+          <p className="mb-1 text-[11px] text-[hsl(var(--color-text-3))]">
             CTR-2025-00441
           </p>
-          <p
-            style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: 'hsl(var(--color-text-1))',
-            }}
-          >
+          <p className="text-sm font-medium text-[hsl(var(--color-text-1))]">
             Brand identity project
           </p>
         </div>
-        <span
-          style={{
-            fontSize: '11px',
-            fontWeight: 500,
-            padding: '3px 10px',
-            borderRadius: '9999px',
-            background: 'hsl(var(--color-success) / 0.12)',
-            color: 'hsl(var(--color-success))',
-          }}
-        >
+        <span className="rounded-full bg-[hsl(var(--color-success)/0.12)] px-2.5 py-0.5 text-[11px] font-medium text-[hsl(var(--color-success))]">
           Funded
         </span>
       </div>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-        {['AC', 'BR'].map((initials, index) => (
-          <div
-            key={initials}
-            style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              background:
-                index === 0
-                  ? 'hsl(var(--color-accent) / 0.2)'
-                  : 'hsl(var(--color-success) / 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '10px',
-              fontWeight: 600,
-              color:
-                index === 0
-                  ? 'hsl(var(--color-accent))'
-                  : 'hsl(var(--color-success))',
-            }}
-          >
-            {initials}
-          </div>
-        ))}
-        <span
-          style={{
-            fontSize: '12px',
-            color: 'hsl(var(--color-text-3))',
-            alignSelf: 'center',
-          }}
-        >
-          2 parties
-        </span>
+
+      <div className="mb-3.5 flex items-center gap-2">
+        <div className="flex -space-x-1.5">
+          {[
+            ['AC', 'accent'],
+            ['BR', 'success'],
+          ].map(([initials, color]) => (
+            <div
+              key={initials}
+              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[hsl(var(--color-surface-2))] text-[10px] font-semibold"
+              style={{
+                background: `hsl(var(--color-${color}) / 0.2)`,
+                color: `hsl(var(--color-${color}))`,
+              }}
+            >
+              {initials}
+            </div>
+          ))}
+        </div>
+        <span className="text-xs text-[hsl(var(--color-text-3))]">2 parties</span>
       </div>
-      <div style={{ marginBottom: '8px' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginBottom: '6px',
-          }}
-        >
-          <span style={{ fontSize: '11px', color: 'hsl(var(--color-text-3))' }}>
+
+      <div className="mb-2">
+        <div className="mb-1.5 flex justify-between">
+          <span className="text-[11px] text-[hsl(var(--color-text-3))]">
             Milestones
           </span>
-          <span style={{ fontSize: '11px', color: 'hsl(var(--color-text-2))' }}>
+          <span className="text-[11px] text-[hsl(var(--color-text-2))]">
             2 of 3
           </span>
         </div>
-        <div
-          style={{
-            height: '4px',
-            background: 'hsl(var(--color-border))',
-            borderRadius: '9999px',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="h-1 overflow-hidden rounded-full bg-[hsl(var(--color-border))]">
           <div
-            style={{
-              width: '66%',
-              height: '100%',
-              background: 'hsl(var(--color-success))',
-              borderRadius: '9999px',
-            }}
+            className="h-full rounded-full bg-[hsl(var(--color-success))]"
+            style={{ width: '66%' }}
           />
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-3))' }}>
-          Escrow
-        </span>
-        <span
-          style={{
-            fontSize: '13px',
-            fontWeight: 500,
-            color: 'hsl(var(--color-text-1))',
-          }}
-        >
+
+      <div className="mt-3 flex justify-between border-t border-[hsl(var(--color-border))] pt-3">
+        <span className="text-xs text-[hsl(var(--color-text-3))]">Escrow</span>
+        <span className="text-[13px] font-medium text-[hsl(var(--color-text-1))]">
           $12,500.00
         </span>
       </div>
@@ -150,7 +75,11 @@ function MockContractCard() {
   )
 }
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const pathname = usePathname()
 
   if (pathname.startsWith('/invite')) {
@@ -158,74 +87,30 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'hsl(var(--color-bg))' }}>
-      <div
-        style={{
-          width: '40%',
-          minHeight: '100vh',
-          background: 'hsl(var(--color-surface))',
-          borderRight: '0.5px solid hsl(var(--color-border))',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '48px 40px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-        className="hidden md:flex"
-      >
+    <div className="flex min-h-screen bg-[hsl(var(--color-bg))]">
+      {/* Left panel */}
+      <div className="relative hidden min-h-screen w-[40%] flex-col justify-between overflow-hidden border-r border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface))] px-10 py-12 md:flex">
+        {/* Glow */}
         <div
-          style={{
-            position: 'absolute',
-            top: '30%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '400px',
-            height: '400px',
-            background:
-              'radial-gradient(circle, hsl(var(--color-accent) / 0.07) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }}
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[30%] h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[hsl(var(--color-accent)/0.07)] blur-[80px]"
         />
 
-        <div>
-          <h1
-            style={{
-              fontSize: '32px',
-              fontWeight: 600,
-              color: 'hsl(var(--color-text-1))',
-              letterSpacing: '-0.5px',
-              marginBottom: '10px',
-            }}
-          >
+        <div className="relative">
+          <h1 className="mb-2.5 text-3xl font-semibold tracking-tight text-[hsl(var(--color-text-1))]">
             Contrakts
           </h1>
-          <p
-            style={{
-              fontSize: '16px',
-              color: 'hsl(var(--color-text-2))',
-              marginBottom: '32px',
-            }}
-          >
+          <p className="mb-8 text-base text-[hsl(var(--color-text-2))]">
             Every deal. Protected.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             {trustSignals.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 12px',
-                  background: 'hsl(var(--color-surface-2))',
-                  border: '0.5px solid hsl(var(--color-border))',
-                  borderRadius: '9999px',
-                  width: 'fit-content',
-                }}
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-[hsl(var(--color-border))] bg-[hsl(var(--color-surface-2))] px-3 py-1.5"
               >
-                <Icon size={12} color="hsl(var(--color-accent))" />
-                <span style={{ fontSize: '12px', color: 'hsl(var(--color-text-2))' }}>
+                <Icon size={12} className="text-[hsl(var(--color-accent))]" />
+                <span className="text-xs text-[hsl(var(--color-text-2))]">
                   {label}
                 </span>
               </div>
@@ -233,40 +118,24 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="relative flex justify-center">
           <MockContractCard />
         </div>
 
-        <p style={{ fontSize: '12px', color: 'hsl(var(--color-text-3))' }}>
+        <p className="relative text-xs text-[hsl(var(--color-text-3))]">
           Copyright {new Date().getFullYear()} Contrakts. All rights reserved.
         </p>
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
-          minHeight: '100vh',
-        }}
-      >
+      {/* Right panel */}
+      <div className="flex flex-1 items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          style={{ width: '100%', maxWidth: '400px' }}
+          className="w-full max-w-[400px]"
         >
-          <p
-            style={{
-              fontSize: '20px',
-              fontWeight: 600,
-              marginBottom: '32px',
-              color: 'hsl(var(--color-text-1))',
-            }}
-            className="md:hidden"
-          >
+          <p className="mb-8 text-xl font-semibold text-[hsl(var(--color-text-1))] md:hidden">
             Contrakts
           </p>
           {children}

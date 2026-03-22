@@ -182,6 +182,7 @@ export default async function DashboardPage() {
               : `${activeContracts.length} in progress`
           }
           icon={<FileText size={14} className="text-[hsl(var(--color-text-3))]" />}
+          sparkline={[1, 2, 1, 3, 2, activeContracts.length || 1]}
         />
         <MetricCard
           label="Escrow held"
@@ -199,6 +200,7 @@ export default async function DashboardPage() {
           icon={
             <CheckCircle size={14} className="text-[hsl(var(--color-text-3))]" />
           }
+          sparkline={[0, 1, 1, 2, 3, completedContracts.length || 0]}
         />
         <MetricCard
           label="Trust score"
@@ -212,6 +214,7 @@ export default async function DashboardPage() {
           }
           trend={profile.trust_score >= 75 ? 'up' : 'down'}
           icon={<Shield size={14} className="text-[hsl(var(--color-text-3))]" />}
+          sparkline={[60, 70, 68, 75, 80, profile.trust_score]}
         />
       </div>
 
@@ -231,7 +234,7 @@ export default async function DashboardPage() {
 
           {allContracts.length === 0 ? (
             <EmptyState
-              icon={<FileText size={22} />}
+              illustration="contracts"
               title="No contracts yet"
               description="Create your first contract to get started."
               action={{

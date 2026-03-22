@@ -164,7 +164,8 @@ export function TemplatesClient({
             </div>
           ) : filteredAll.length === 0 ? (
             <EmptyState
-              icon={<Layers size={22} />}
+              illustration={search || industry !== 'all' ? undefined : 'templates'}
+              icon={search || industry !== 'all' ? <Layers size={22} /> : undefined}
               title={
                 search || industry !== 'all'
                   ? 'No templates match your filters'
@@ -202,7 +203,7 @@ export function TemplatesClient({
         <TabsPanel value="mine">
           {filteredMine.length === 0 ? (
             <EmptyState
-              icon={<Layers size={22} />}
+              illustration="templates"
               title="No personal templates yet"
               description="Save a contract as a template or create one from scratch to reuse it for future deals."
               action={{
