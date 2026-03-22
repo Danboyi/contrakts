@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Confetti } from '@/components/ui/confetti'
 import { ActionBanner } from '@/components/contracts/action-banner'
+import { MilestoneTimeline } from '@/components/contracts/milestone-timeline'
 import { MilestoneTracker } from '@/components/contracts/milestone-tracker'
 import { NegotiationReviewPanel } from '@/components/contracts/negotiation-review-panel'
 import { NegotiationTimeline } from '@/components/contracts/negotiation-timeline'
@@ -494,6 +495,12 @@ export function ContractDetailClient({
           state={contract.state}
         />
       </div>
+
+      {milestones.length > 0 && (
+        <div className="mb-6">
+          <MilestoneTimeline milestones={milestones} currency={contract.currency} />
+        </div>
+      )}
 
       <div className="mb-6">
         <MilestoneTracker

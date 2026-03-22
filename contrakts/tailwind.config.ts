@@ -100,6 +100,7 @@ const config: Config = {
   			'scale-in': 'scaleIn 200ms ease forwards',
   			'spin-slow': 'spin 3s linear infinite',
   			'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+  			shimmer: 'shimmer 1.8s ease-in-out infinite',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
@@ -147,7 +148,15 @@ const config: Config = {
   					opacity: '1'
   				},
   				'50%': {
-  					opacity: '0.5'
+  					opacity: '0.4'
+  				}
+  			},
+  			shimmer: {
+  				'0%': {
+  					backgroundPosition: '-200% 0'
+  				},
+  				'100%': {
+  					backgroundPosition: '200% 0'
   				}
   			},
   			'accordion-down': {

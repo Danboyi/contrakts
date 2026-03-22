@@ -1,3 +1,4 @@
+export * from './breadcrumbs'
 export * from './sidebar'
 export * from './dashboard-shell'
 export * from './page-header'

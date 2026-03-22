@@ -25,20 +25,32 @@
   }
 
   .light {
-    --color-bg: 0 0% 99%;
-    --color-surface: 0 0% 97%;
-    --color-surface-2: 0 0% 94%;
-    --color-border: 240 4% 88%;
-    --color-border-2: 240 4% 78%;
-    --color-text-1: 240 5% 8%;
-    --color-text-2: 240 4% 38%;
-    --color-text-3: 240 4% 58%;
-    --color-accent: 239 84% 60%;
-    --color-accent-dim: 239 84% 60% / 0.10;
-    --color-success: 160 84% 32%;
-    --color-warning: 38 92% 42%;
-    --color-danger: 0 84% 52%;
-    --color-gold: 43 62% 44%;
+    --color-bg: 220 20% 97%;
+    --color-surface: 0 0% 100%;
+    --color-surface-2: 220 14% 96%;
+    --color-border: 220 13% 91%;
+    --color-border-2: 220 13% 82%;
+    --color-text-1: 224 71% 4%;
+    --color-text-2: 220 9% 43%;
+    --color-text-3: 220 9% 63%;
+    --color-accent: 239 84% 57%;
+    --color-accent-dim: 239 84% 57% / 0.08;
+    --color-success: 160 84% 30%;
+    --color-warning: 38 92% 40%;
+    --color-danger: 0 72% 51%;
+    --color-gold: 43 62% 40%;
+  }
+
+  .light ::selection {
+    background-color: hsl(var(--color-accent) / 0.15);
+  }
+
+  .light ::-webkit-scrollbar-thumb {
+    background: hsl(var(--color-border-2));
+  }
+
+  .light ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--color-text-3));
   }
 
   * {
@@ -163,5 +175,16 @@
 
   .bg-accent-dim {
     background-color: hsl(var(--color-accent-dim));
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--color-surface-2)) 0%,
+      hsl(var(--color-border)) 50%,
+      hsl(var(--color-surface-2)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
   }
 }
