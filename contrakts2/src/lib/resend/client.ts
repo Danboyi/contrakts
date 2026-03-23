@@ -5,7 +5,14 @@ import { Resend } from 'resend'
 import { BaseEmail } from '@/lib/resend/templates/base-email'
 import { getAppUrl } from '@/lib/supabase/config'
 
-export const resend = new Resend(process.env.RESEND_API_KEY ?? '')
+let resendClient: Resend | null = null
+
+export function getResendClient(): Resend {
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY ?? '')
+  }
+  return resendClient
+}
 
 function isConfigured(value?: string) {
   return Boolean(value && !value.startsWith('your_') && !value.includes('placeholder'))
@@ -26,7 +33,7 @@ export async function sendEmail({
   }
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResendClient().emails.send({
       from: process.env.EMAIL_FROM ?? 'Contrakts <contracts@contrakts.io>',
       to,
       subject,
