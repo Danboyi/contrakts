@@ -85,15 +85,21 @@ function UserMenu({ profile }: { profile: User }) {
           </div>
         </DropdownLabel>
         <DropdownSeparator />
-        <DropdownItem asChild leftIcon={<LayoutDashboard size={14} />}>
-          <Link href="/dashboard">Dashboard</Link>
-        </DropdownItem>
-        <DropdownItem asChild leftIcon={<UserIcon size={14} />}>
-          <Link href="/profile">Profile</Link>
-        </DropdownItem>
-        <DropdownItem asChild leftIcon={<Settings size={14} />}>
-          <Link href="/settings">Settings</Link>
-        </DropdownItem>
+        <Link href="/dashboard">
+          <DropdownItem leftIcon={<LayoutDashboard size={14} />}>
+            Dashboard
+          </DropdownItem>
+        </Link>
+        <Link href="/profile">
+          <DropdownItem leftIcon={<UserIcon size={14} />}>
+            Profile
+          </DropdownItem>
+        </Link>
+        <Link href="/settings">
+          <DropdownItem leftIcon={<Settings size={14} />}>
+            Settings
+          </DropdownItem>
+        </Link>
         <DropdownSeparator />
         <DropdownItem
           danger

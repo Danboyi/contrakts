@@ -36,7 +36,7 @@ const DropdownItem = React.forwardRef<
     leftIcon?: React.ReactNode
     rightSlot?: React.ReactNode
   }
->(({ className, inset, danger, leftIcon, rightSlot, children, ...props }, ref) => (
+>(({ className, inset, danger, leftIcon, rightSlot, asChild, children, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
