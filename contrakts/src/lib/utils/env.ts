@@ -30,6 +30,16 @@ export function validateEnv() {
   }
 
   if (missing.length > 0) {
+    // During build time (e.g. on Vercel), env vars may not be available yet.
+    // Warn instead of throwing so the build can complete; validation will
+    // still throw at runtime if the vars are truly missing.
+    if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.CI) {
+      console.warn(
+        `[Contrakts] Missing environment variables (build-time):\n${missing.join('\n')}\n` +
+          'These must be set before the app runs.'
+      )
+      return
+    }
     throw new Error(
       `Missing required environment variables:\n${missing.join('\n')}\n` +
         'Add these to your .env.local file.'
