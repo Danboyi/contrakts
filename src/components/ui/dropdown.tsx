@@ -36,30 +36,51 @@ const DropdownItem = React.forwardRef<
     leftIcon?: React.ReactNode
     rightSlot?: React.ReactNode
   }
->(({ className, inset, danger, leftIcon, rightSlot, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      'relative flex cursor-pointer select-none items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm outline-none',
-      'text-[hsl(var(--color-text-2))] transition-colors duration-100',
-      'hover:bg-[hsl(var(--color-surface))] hover:text-[hsl(var(--color-text-1))]',
-      'focus:bg-[hsl(var(--color-surface))] focus:text-[hsl(var(--color-text-1))]',
-      danger &&
-        'text-[hsl(var(--color-danger))] hover:bg-[hsl(var(--color-danger)/0.1)] focus:bg-[hsl(var(--color-danger)/0.1)]',
-      inset && 'pl-8',
-      className
-    )}
-    {...props}
-  >
-    {leftIcon && <span className="shrink-0 opacity-60">{leftIcon}</span>}
-    <span className="flex-1">{children}</span>
-    {rightSlot && (
-      <span className="ml-auto text-xs text-[hsl(var(--color-text-3))]">
-        {rightSlot}
-      </span>
-    )}
-  </DropdownMenuPrimitive.Item>
-))
+>(({ className, inset, danger, leftIcon, rightSlot, children, asChild, ...props }, ref) => {
+  const itemClassName = cn(
+    'relative flex cursor-pointer select-none items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm outline-none',
+    'text-[hsl(var(--color-text-2))] transition-colors duration-100',
+    'hover:bg-[hsl(var(--color-surface))] hover:text-[hsl(var(--color-text-1))]',
+    'focus:bg-[hsl(var(--color-surface))] focus:text-[hsl(var(--color-text-1))]',
+    danger &&
+      'text-[hsl(var(--color-danger))] hover:bg-[hsl(var(--color-danger)/0.1)] focus:bg-[hsl(var(--color-danger)/0.1)]',
+    inset && 'pl-8',
+    className
+  )
+
+  if (asChild && React.isValidElement(children)) {
+    return (
+      <DropdownMenuPrimitive.Item ref={ref} asChild className={itemClassName} {...props}>
+        {React.cloneElement(children as React.ReactElement<{ className?: string; children?: React.ReactNode }>, {
+          className: cn(itemClassName, (children as React.ReactElement<{ className?: string }>).props.className),
+          children: (
+            <>
+              {leftIcon && <span className="shrink-0 opacity-60">{leftIcon}</span>}
+              <span className="flex-1">{(children as React.ReactElement<{ children?: React.ReactNode }>).props.children}</span>
+              {rightSlot && (
+                <span className="ml-auto text-xs text-[hsl(var(--color-text-3))]">
+                  {rightSlot}
+                </span>
+              )}
+            </>
+          ),
+        })}
+      </DropdownMenuPrimitive.Item>
+    )
+  }
+
+  return (
+    <DropdownMenuPrimitive.Item ref={ref} className={itemClassName} {...props}>
+      {leftIcon && <span className="shrink-0 opacity-60">{leftIcon}</span>}
+      <span className="flex-1">{children}</span>
+      {rightSlot && (
+        <span className="ml-auto text-xs text-[hsl(var(--color-text-3))]">
+          {rightSlot}
+        </span>
+      )}
+    </DropdownMenuPrimitive.Item>
+  )
+})
 DropdownItem.displayName = 'DropdownItem'
 
 const DropdownSeparator = React.forwardRef<

@@ -231,7 +231,7 @@ export async function signAsNewUser(
   if (!contract) {
     return { error: 'This invite link is invalid or has expired.' }
   }
-  if (!['pending', 'draft'].includes(contract.state)) {
+  if (!['pending', 'draft', 'negotiating'].includes(contract.state)) {
     return { error: 'This contract is no longer accepting signatures.' }
   }
   if (contract.signed_counterparty_at) {
@@ -358,7 +358,7 @@ export async function signAsExistingUser(
   if (!contract) {
     return { error: 'Invalid invite link.' }
   }
-  if (!['pending', 'draft'].includes(contract.state)) {
+  if (!['pending', 'draft', 'negotiating'].includes(contract.state)) {
     return { error: 'This contract is no longer accepting signatures.' }
   }
   if (contract.initiator_id === user.id) {
